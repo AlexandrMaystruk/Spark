@@ -3,13 +3,14 @@ package com.gmail.maystruks08.spark.di
 import android.content.Context
 import android.content.res.Resources
 import com.gmail.maystruks08.spark.App
+import com.gmail.maystruks08.spark.MainActivity
 import com.gmail.maystruks08.spark.di.inbox.MessageListComponent
 import com.gmail.maystruks08.spark.di.detail.DetailComponent
 import dagger.Component
 import javax.inject.Singleton
 
 @Singleton
-@Component(modules = [AppModule::class, DatabaseModule::class, NetworkModule::class, APIModule::class])
+@Component(modules = [AppModule::class, DatabaseModule::class, NetworkModule::class, APIModule::class, CoroutineModule::class])
 interface AppComponent {
 
     fun provideAppContext(): Context
@@ -21,4 +22,6 @@ interface AppComponent {
     fun provideDetailComponent(): DetailComponent
 
     fun inject(app: App)
+
+    fun inject(app: MainActivity)
 }

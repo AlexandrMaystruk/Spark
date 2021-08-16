@@ -3,8 +3,9 @@ package com.gmail.maystruks08.data
 import com.gmail.maystruks08.domain.entity.Message
 import com.gmail.maystruks08.domain.repositories.Repository
 import java.util.*
+import javax.inject.Inject
 
-class RepositoryImpl : Repository {
+class RepositoryImpl @Inject constructor() : Repository {
 
     override suspend fun provideInboxData(): List<Message> {
         return listOf(

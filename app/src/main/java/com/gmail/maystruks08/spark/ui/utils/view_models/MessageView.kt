@@ -1,3 +1,5 @@
 package com.gmail.maystruks08.spark.ui.utils.view_models
 
-data class MessageView(val date: String)
+import com.gmail.maystruks08.spark.ui.spark_adapter.base.Item
+
+data class MessageView(val date: String, val subject: String): Item
