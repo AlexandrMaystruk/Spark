@@ -8,8 +8,8 @@ import androidx.annotation.MenuRes
 import androidx.annotation.StringRes
 
 class FragmentToolbar(
-    @IdRes val resId: Int,
     @StringRes val title: Int,
+    val titleString: String?,
     @MenuRes val menuId: Int,
     @DrawableRes val navigationIcon: Int,
     val navigationIconClickListener: (() -> Unit)?,
@@ -18,20 +18,23 @@ class FragmentToolbar(
     val menuClicks: MutableList<MenuItem.OnMenuItemClickListener?>
 ) {
     class Builder {
-        private var resId: Int = NO_TOOLBAR
         private var menuId: Int = NO_TOOLBAR
         private var title: Int = NO_TOOLBAR
+        private var titleString: String? = null
         private var navigationIcon: Int = NO_TOOLBAR
-        private var navigationIconClickListener:  (() -> Unit)? = null
+        private var navigationIconClickListener: (() -> Unit)? = null
         private var menuItems: MutableList<Int> = mutableListOf()
         private var menuClicks: MutableList<MenuItem.OnMenuItemClickListener?> = mutableListOf()
         private var searchViewTextChangeListener: ((String) -> Unit)? = null
 
-        fun withId(@IdRes resId: Int) = apply { this.resId = resId }
-
         fun withTitle(title: Int) = apply { this.title = title }
 
-        fun withNavigationIcon(@DrawableRes navigationIconId: Int, navigationIconClickListener: () -> Unit) =
+        fun withTitle(title: String) = apply { this.titleString = title }
+
+        fun withNavigationIcon(
+            @DrawableRes navigationIconId: Int,
+            navigationIconClickListener: () -> Unit
+        ) =
             apply {
                 this.navigationIcon = navigationIconId
                 this.navigationIconClickListener = navigationIconClickListener
@@ -49,8 +52,8 @@ class FragmentToolbar(
         }
 
         fun build() = FragmentToolbar(
-            resId,
             title,
+            titleString,
             menuId,
             navigationIcon,
             navigationIconClickListener,

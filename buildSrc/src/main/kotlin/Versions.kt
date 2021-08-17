@@ -5,6 +5,7 @@ object Versions {
     const val kotlin = "1.5.21"
     const val ktxCore = "1.6.0"
     const val fragmentX = "1.2.5"
+    const val navigation = "2.3.5"
 
     //coroutines
     const val coroutines = "1.3.9"
@@ -45,6 +46,7 @@ object Versions {
 
     // other
     const val glide = "0.10.0"
+    const val circleImageView = "3.1.0"
     const val serialization = "1.2.1"
     const val kotlinxDatetime = "0.2.1"
 }

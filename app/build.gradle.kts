@@ -1,5 +1,6 @@
 plugins {
     id("com.android.application")
+    id("androidx.navigation.safeargs")
     kotlin("android")
     kotlin("kapt")
 }
@@ -41,6 +42,7 @@ dependencies {
     implementation(project(":data"))
     core()
     material()
+    ui()
     di()
     room()
     async()
@@ -58,6 +60,10 @@ fun DependencyHandlerScope.core() {
 
 fun DependencyHandlerScope.material() {
     implementation(Dependencies.other.material)
+}
+
+fun DependencyHandlerScope.ui() {
+    implementation(Dependencies.image.circleImageView)
 }
 
 fun DependencyHandlerScope.room() {
@@ -93,7 +99,7 @@ fun DependencyHandlerScope.jetpack() {
     implementation(Dependencies.jetpack.lifecycleViewModel)
     implementation(Dependencies.jetpack.lifecycleRuntime)
     implementation(Dependencies.jetpack.fragmentX)
-
-
+    implementation(Dependencies.jetpack.navigationFragment)
+    implementation(Dependencies.jetpack.navigationUi)
 }
 

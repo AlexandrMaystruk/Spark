@@ -6,4 +6,6 @@ interface Repository{
 
     suspend fun provideInboxData(): List<Message>
 
+    suspend fun provideMessageById(messageId: String): Message
+
 }

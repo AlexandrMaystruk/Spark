@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/cardview_dark_background">
+
+    <TextView
+        android:id="@+id/tvStickyMessageTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:drawableStart="@drawable/ic_pin"
+        android:drawablePadding="@dimen/margin_xs"
+        android:padding="@dimen/margin_min"
+        android:text="Personal"
+        android:textColor="@color/teal_200"
+        android:textStyle="bold"
+        tools:ignore="UseCompatTextViewDrawableXml" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.3dp"
+        android:layout_gravity="bottom"
+        android:background="@color/design_default_color_on_primary" />
+</FrameLayout>

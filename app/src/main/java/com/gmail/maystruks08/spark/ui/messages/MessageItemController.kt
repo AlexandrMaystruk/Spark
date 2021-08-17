@@ -71,7 +71,7 @@ class MessageViewHolder(
     override fun onBind(item: MessageView) {
         super.onBind(item)
         with(binding) {
-            tvMessageSubject.text = item.subject
+            tvMessageFrom.text = item.subject
         }
     }
 

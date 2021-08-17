@@ -13,9 +13,9 @@ class ProvideInboxItemsUseCaseImpl @Inject constructor(
     private val repository: Repository
 ) : ProvideInboxItemsUseCase {
 
-    override suspend operator fun invoke(): Flow<List<Message>> {
+    override suspend operator fun invoke(): Flow<Map<String, List<Message>>> {
         return flow {
-            val sortedMessages = repository.provideInboxData().sortedBy { it.date }
+            val sortedMessages = repository.provideInboxData().sortedBy { it.date }.groupBy { it.group }
             emit(sortedMessages)
         }.flowOn(coroutineDispatchers.io())
     }

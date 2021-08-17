@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">Spark</string>
+
+    <string name="toolbar_inbox">Inbox</string>
+
+
+    <string name="action_search">Search</string>
+
+    <string name="action_show_all">Show all</string>
+
 </resources>

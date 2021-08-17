@@ -24,9 +24,4 @@ abstract class MessageListModule {
     @Binds
     @MessageListScope
     abstract fun bindProvideInboxItemsUseCase(impl: ProvideInboxItemsUseCaseImpl): ProvideInboxItemsUseCase
-
-    @Binds
-    @MessageListScope
-    abstract fun bindRepository(impl: RepositoryImpl): Repository
-
 }
