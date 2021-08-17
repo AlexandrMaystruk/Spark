@@ -41,17 +41,15 @@ class DetailFragment : BaseFragment() {
 
     override fun builder() = FragmentToolbar
         .Builder()
-        .withNavigationIcon(R.drawable.ic_pin) { findNavController(this).navigateUp() }
-        .withTitle(args.messageId)
+        .withNavigationIcon(R.drawable.ic_arrow_back) { findNavController(this).navigateUp() }
+        .withTitle(args.title)
         .build()
 
     override fun bindViewModel() {
         viewModel = injectViewModel(viewModeFactory)
         with(viewModel) {
             lifecycleScope.launchWhenStarted {
-                selectedMessage.collect {
-                    binding?.message?.text = it?.content
-                }
+                selectedMessage.collect(::renderViewState)
             }
         }
     }
@@ -67,5 +65,24 @@ class DetailFragment : BaseFragment() {
 
     override fun clearDependency() {
         App.clearDetailComponent()
+    }
+
+    private fun renderViewState(state: DetailViewState){
+        binding?.run {
+            when(state){
+                DetailViewState.Loading -> progressBar.visibility = View.VISIBLE
+                is DetailViewState.ShowMessage -> {
+                    progressBar.visibility = View.GONE
+                    with(state.detail){
+                        tvMessageFrom.text = from
+                        tvContent.text = content
+                        tvDate.text = date
+                    }
+                }
+                is DetailViewState.Error -> {
+                    progressBar.visibility = View.GONE
+                }
+            }
+        }
     }
 }

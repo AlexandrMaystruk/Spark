@@ -7,15 +7,19 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.NavHostFragment.findNavController
+import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.RecyclerView
 import com.gmail.maystruks08.spark.App
 import com.gmail.maystruks08.spark.R
 import com.gmail.maystruks08.spark.databinding.MessageFragmentBinding
 import com.gmail.maystruks08.spark.ui.base.BaseFragment
 import com.gmail.maystruks08.spark.ui.spark_adapter.SparkAdapter
+import com.gmail.maystruks08.spark.ui.spark_adapter.base.MessageSwipeActionHelper
 import com.gmail.maystruks08.spark.ui.utils.injectViewModel
 import com.gmail.maystruks08.spark.ui.utils.toolbar.FragmentToolbar
 import com.gmail.maystruks08.spark.ui.utils.view_models.BottomView
 import com.gmail.maystruks08.spark.ui.utils.view_models.MessageView
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.flow.collect
 import javax.inject.Inject
 
@@ -27,6 +31,7 @@ class MessagesFragment : BaseFragment(),
     lateinit var viewModel: MessagesViewModel
     private lateinit var messageAdapter: SparkAdapter
     private var binding: MessageFragmentBinding? = null
+    private var snackBar: Snackbar? = null
 
 
     override fun injectDependency() {
@@ -71,20 +76,13 @@ class MessagesFragment : BaseFragment(),
         viewModel = injectViewModel(viewModeFactory)
         with(viewModel) {
             lifecycleScope.launchWhenStarted {
-                messages.collect {
-                    messageAdapter.submitList(it)
-                }
-                showDetailFragment.collect {
-
-                }
+                messages.collect(::renderViewState)
             }
         }
     }
 
     override fun initViews() {
-        binding?.run {
-            rvMessages.adapter = messageAdapter
-        }
+        setupAdapter()
     }
 
     /**
@@ -103,7 +101,6 @@ class MessagesFragment : BaseFragment(),
         viewModel.onShowAllMessageFromGroupClicked(item)
     }
 
-
     override fun onDestroyView() {
         super.onDestroyView()
         binding = null
@@ -114,8 +111,46 @@ class MessagesFragment : BaseFragment(),
     }
 
 
-    companion object{
-
-        fun getInstance(): MessagesFragment = MessagesFragment()
+    private fun renderViewState(state: MessageState) {
+        binding?.run {
+            when (state) {
+                MessageState.Loading -> {
+                    progressBar.visibility = View.VISIBLE
+                }
+                is MessageState.ShowInboxList -> {
+                    progressBar.visibility = View.GONE
+                    messageAdapter.submitList(state.data)
+                }
+                is MessageState.Error -> {
+                    progressBar.visibility = View.GONE
+                    snackBar = Snackbar.make(root, state.message, Snackbar.LENGTH_LONG).also { it.show() }
+                }
+            }
+        }
     }
+
+    private fun setupAdapter() {
+        binding?.run {
+            rvMessages.adapter = messageAdapter
+            setUpItemTouchHelper()
+        }
+    }
+
+    private fun setUpItemTouchHelper() {
+        val messageSwipeActionHelper = object : MessageSwipeActionHelper(requireContext()) {
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                val position = viewHolder.adapterPosition
+                val swipedMessage = messageAdapter.currentList[position]
+                swipedMessage ?: return
+                if (direction == ItemTouchHelper.LEFT) {
+                    viewModel.onMessageSwipedLeft(swipedMessage)
+                } else if (direction == ItemTouchHelper.RIGHT) {
+                    viewModel.onMessageSwipedRight(swipedMessage)
+                }
+                messageAdapter.notifyItemChanged(position)
+            }
+        }
+        ItemTouchHelper(messageSwipeActionHelper).attachToRecyclerView(binding?.rvMessages)
+    }
+
 }

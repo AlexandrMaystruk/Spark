@@ -2,44 +2,38 @@ package com.gmail.maystruks08.spark.ui.messages
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.gmail.maystruks08.domain.entity.exceptions.MessageNotFoundException
 import com.gmail.maystruks08.domain.use_cases.ProvideInboxItemsUseCase
-import com.gmail.maystruks08.spark.R
-import com.gmail.maystruks08.spark.ui.utils.toView
+import com.gmail.maystruks08.spark.ui.spark_adapter.base.Item
 import com.gmail.maystruks08.spark.ui.utils.view_models.BottomView
-import com.gmail.maystruks08.spark.ui.utils.view_models.InboxView
 import com.gmail.maystruks08.spark.ui.utils.view_models.MessageView
-import com.gmail.maystruks08.spark.ui.utils.view_models.StickyView
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class MessagesViewModel @Inject constructor(
+    private val inboxViewMapper: InboxViewMapper,
     private val provideInbox: ProvideInboxItemsUseCase
 ) : ViewModel() {
 
-    val messages get(): StateFlow<List<InboxView>> = _messagesFlow
-    private val _messagesFlow = MutableStateFlow<List<InboxView>>(emptyList())
-
-    val showDetailFragment get(): StateFlow<Unit> = _showDetailFlow
-    private val _showDetailFlow = MutableStateFlow(Unit)
+    val messages get(): StateFlow<MessageState> = _messagesFlow
+    private val _messagesFlow = MutableStateFlow<MessageState>(MessageState.Loading)
 
     init {
-        viewModelScope.launch() {
-            provideInbox
-                .invoke()
-                .catch { throwable -> handleError(throwable) }
-                .map { inbox ->
-                    val resultList = mutableListOf<InboxView>()
-                    inbox.forEach { (group, messages) ->
-                        resultList.add(StickyView(R.drawable.ic_pin, group))
-                        resultList.addAll(messages.map { it.toView() })
-                        resultList.add(BottomView("Show all"))
+        viewModelScope.launch {
+            try {
+                provideInbox
+                    .invoke()
+                    .map { inboxViewMapper.toInboxView(it) }
+                    .collect {
+                        _messagesFlow.value = MessageState.ShowInboxList(it)
                     }
-                    return@map resultList
-                }
-                .collect {
-                    _messagesFlow.value = it
-                }
+            } catch (t: Throwable) {
+                handleInboxLoadingError(t)
+            }
         }
     }
 
@@ -55,8 +49,19 @@ class MessagesViewModel @Inject constructor(
 
     }
 
-    private fun handleError(throwable: Throwable) {
+    fun onMessageSwipedLeft(swipedMessage: Item) {
 
+    }
+
+    fun onMessageSwipedRight(swipedMessage: Item) {
+
+    }
+
+    private fun handleInboxLoadingError(throwable: Throwable) {
+        _messagesFlow.value = when (throwable) {
+            is MessageNotFoundException -> MessageState.Error("Message not found")
+            else -> MessageState.Error("Internal error")
+        }
     }
 
 }

@@ -27,7 +27,7 @@ class RepositoryImpl @Inject constructor() : Repository {
                 date = Date(),
                 from = "Andrey",
                 subject = "Alex",
-                contentPreview = "You could try to better optimize the user interface",
+                contentPreview = "You could try to better optimize the user interface.You could try to better optimize the user interface.You could try to better optimize the user interface.You could try to better optimize the user interface.You could try to better optimize the user interface.You could try to better optimize the user interface.You could try to better optimize the user interface.You could try to better optimize the user interface.You could try to better optimize the user interface.You could try to better optimize the user interface",
                 group = "Others",
                 isRead = false,
                 isDeleted = false
