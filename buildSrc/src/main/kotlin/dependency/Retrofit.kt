@@ -18,4 +18,6 @@ object Retrofit {
      * Square’s meticulous HTTP client for Java and Kotlin.
      */
     const val interceptor = "com.squareup.okhttp3:logging-interceptor:${Versions.interceptor}"
+
+    const val retrofitCoroutines =  "com.jakewharton.retrofit:retrofit2-kotlin-coroutines-adapter:${Versions.retrofitCoroutines}"
 }

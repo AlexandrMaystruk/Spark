@@ -2,6 +2,7 @@ package com.gmail.maystruks08.spark.ui.detail
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.gmail.maystruks08.domain.entity.exceptions.MessageNotFoundException
 import com.gmail.maystruks08.domain.use_cases.DeleteMessageUseCase
 import com.gmail.maystruks08.domain.use_cases.ProvideMessageUseCase
 import com.gmail.maystruks08.domain.use_cases.SwitchReadReadMessageStateUseCase
@@ -20,8 +21,8 @@ class DetailViewModel @Inject constructor(
 
 ) : ViewModel() {
 
-    val selectedMessage get() = _messagesFlow
-    private val _messagesFlow = MutableStateFlow<DetailViewState>(DetailViewState.Loading)
+    val selectedMessage get() = _messageDetailFlow
+    private val _messageDetailFlow = MutableStateFlow<DetailViewState>(DetailViewState.Loading)
 
     val buttonState get() = _buttonStateFlow
     private val _buttonStateFlow =
@@ -32,7 +33,7 @@ class DetailViewModel @Inject constructor(
             try {
                 val message = provideMessageUseCase.invoke(messageId)
                 val detailView = inboxViewMapper.toDetailView(message)
-                _messagesFlow.value = DetailViewState.ShowMessage(detailView)
+                _messageDetailFlow.value = DetailViewState.ShowMessage(detailView)
                 handleButtonsState(message.isRead, message.isDeleted)
             } catch (t: Throwable) {
                 onError(t)
@@ -74,18 +75,21 @@ class DetailViewModel @Inject constructor(
                 getCurrentDetailView()?.isDeleted = updatedMessage.isDeleted
             } catch (t: Throwable) {
                 //after error render previous state
-                getCurrentDetailView()?.let { handleButtonsState(it.isRead, false) }
+                getCurrentDetailView()?.let { handleButtonsState(it.isRead, it.isDeleted) }
                 onError(t)
             }
         }
     }
 
     private fun getCurrentDetailView(): MessageDetailView? {
-        return (_messagesFlow.value as? DetailViewState.ShowMessage)?.detail
+        return (_messageDetailFlow.value as? DetailViewState.ShowMessage)?.detail
     }
 
     private fun onError(throwable: Throwable) {
-
+        _messageDetailFlow.value = when (throwable) {
+            is MessageNotFoundException -> DetailViewState.Error("Message not found")
+            else -> DetailViewState.Error("Internal error")
+        }
     }
 
 }

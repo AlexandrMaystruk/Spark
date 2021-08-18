@@ -27,6 +27,7 @@ class InboxViewMapper @Inject constructor(private val resources: Resources) {
     fun toInboxView(data: Map<String, List<Message>>): List<InboxView> {
         return mutableListOf<InboxView>().apply {
             data.forEach { (group, messages) ->
+                if (messages.isEmpty()) return@forEach
                 add(StickyView(R.drawable.ic_pin, group))
                 addAll(toViews(messages))
                 add(BottomView(resources.getString(R.string.action_show_all)))

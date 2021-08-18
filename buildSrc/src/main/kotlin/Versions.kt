@@ -2,7 +2,7 @@
 
 object Versions {
     //kotlin
-    const val kotlin = "1.5.21"
+    const val kotlin = "1.5.10"
     const val ktxCore = "1.6.0"
     const val fragmentX = "1.2.5"
     const val navigation = "2.3.5"
@@ -11,7 +11,6 @@ object Versions {
     const val coroutines = "1.3.9"
     const val lifecycle = "2.2.0"
 
-    //Image loading
     const val gradle = "7.1.0-alpha01"
 
     //ui
@@ -43,6 +42,7 @@ object Versions {
     // retrofit2
     const val retrofit2 = "2.9.0"
     const val interceptor = "4.9.1"
+    const val retrofitCoroutines= "0.9.2"
 
     // other
     const val glide = "0.10.0"
