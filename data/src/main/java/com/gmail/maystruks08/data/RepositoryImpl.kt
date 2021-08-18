@@ -8,7 +8,6 @@ import javax.inject.Inject
 
 class RepositoryImpl @Inject constructor() : Repository {
 
-
     companion object {
 
         private val inbox = listOf(

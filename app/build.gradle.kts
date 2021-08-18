@@ -10,7 +10,7 @@ android {
     buildToolsVersion = Dependencies.android.buildTools
 
     defaultConfig {
-        applicationId = "com.gmail.maystruks08.spark"
+        applicationId = Android.applicationId
         minSdk = Android.minSdk
         targetSdk = Android.targetSdk
         versionCode = 1
@@ -35,6 +35,9 @@ android {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
+    kapt {
+        correctErrorTypes = true
+    }
 }
 
 dependencies {
@@ -44,7 +47,6 @@ dependencies {
     material()
     ui()
     di()
-    room()
     async()
     jetpack()
 }
@@ -66,22 +68,11 @@ fun DependencyHandlerScope.ui() {
     implementation(Dependencies.image.circleImageView)
 }
 
-fun DependencyHandlerScope.room() {
-    implementation(Dependencies.room.runtime)
-    kapt(Dependencies.room.compiler)
-    implementation(Dependencies.room.ktx)
-}
-
 fun DependencyHandlerScope.di() {
     implementation(Dependencies.di.dagger2)
     kapt(Dependencies.di.dagger2compiler)
+    kapt(Dependencies.room.compiler)
     implementation(Dependencies.di.javaxInject)
-}
-
-fun DependencyHandlerScope.retrofit() {
-    implementation(Dependencies.retrofit.retrofit2)
-    implementation(Dependencies.retrofit.converterGson)
-    implementation(Dependencies.retrofit.interceptor)
 }
 
 fun DependencyHandlerScope.imageLoading() {
