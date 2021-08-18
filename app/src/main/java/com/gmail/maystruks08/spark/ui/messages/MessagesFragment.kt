@@ -83,6 +83,7 @@ class MessagesFragment : BaseFragment(),
 
     override fun initViews() {
         setupAdapter()
+        viewModel.provideMessageList()
     }
 
     /**
@@ -103,6 +104,7 @@ class MessagesFragment : BaseFragment(),
 
     override fun onDestroyView() {
         super.onDestroyView()
+        snackBar?.dismiss()
         binding = null
     }
 

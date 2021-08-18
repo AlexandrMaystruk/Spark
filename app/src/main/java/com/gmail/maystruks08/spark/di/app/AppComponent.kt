@@ -1,11 +1,11 @@
-package com.gmail.maystruks08.spark.di
+package com.gmail.maystruks08.spark.di.app
 
 import android.content.Context
 import android.content.res.Resources
 import com.gmail.maystruks08.spark.App
 import com.gmail.maystruks08.spark.MainActivity
-import com.gmail.maystruks08.spark.di.inbox.MessageListComponent
-import com.gmail.maystruks08.spark.di.detail.DetailComponent
+import com.gmail.maystruks08.spark.di.inbox.detail.DetailComponent
+import com.gmail.maystruks08.spark.di.inbox.message_list.MessageListComponent
 import dagger.Component
 import javax.inject.Singleton
 

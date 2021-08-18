@@ -8,7 +8,7 @@
         <entry key="app/src/main/res/drawable/ic_pin.xml" value="0.3717948717948718" />
         <entry key="app/src/main/res/drawable/ic_search.xml" value="0.3717948717948718" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.20208333333333334" />
-        <entry key="app/src/main/res/layout/detail_fragment.xml" value="0.21197916666666666" />
+        <entry key="app/src/main/res/layout/detail_fragment.xml" value="0.165" />
         <entry key="app/src/main/res/layout/item_bottom.xml" value="0.3614583333333333" />
         <entry key="app/src/main/res/layout/item_message.xml" value="0.5" />
         <entry key="app/src/main/res/layout/item_sticky.xml" value="0.3614583333333333" />

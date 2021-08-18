@@ -1,11 +1,11 @@
 package com.gmail.maystruks08.spark
 
 import android.app.Application
-import com.gmail.maystruks08.spark.di.AppComponent
-import com.gmail.maystruks08.spark.di.AppModule
-import com.gmail.maystruks08.spark.di.DaggerAppComponent
-import com.gmail.maystruks08.spark.di.inbox.MessageListComponent
-import com.gmail.maystruks08.spark.di.detail.DetailComponent
+import com.gmail.maystruks08.spark.di.app.AppComponent
+import com.gmail.maystruks08.spark.di.app.AppModule
+import com.gmail.maystruks08.spark.di.app.DaggerAppComponent
+import com.gmail.maystruks08.spark.di.inbox.message_list.MessageListComponent
+import com.gmail.maystruks08.spark.di.inbox.detail.DetailComponent
 
 class App : Application() {
 

@@ -8,7 +8,8 @@ data class Message(
     val from: String,
     val subject: String,
     val contentPreview: String,
+    val content: String,
     val group: String,
-    val isRead: Boolean,
-    val isDeleted: Boolean
+    var isRead: Boolean,
+    var isDeleted: Boolean
 )

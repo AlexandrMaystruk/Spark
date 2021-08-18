@@ -8,4 +8,6 @@ interface Repository{
 
     suspend fun provideMessageById(messageId: String): Message
 
+    suspend fun updateMessage(message: Message)
+
 }

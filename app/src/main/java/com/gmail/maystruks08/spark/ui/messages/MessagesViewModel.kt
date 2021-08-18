@@ -22,7 +22,7 @@ class MessagesViewModel @Inject constructor(
     val messages get(): StateFlow<MessageState> = _messagesFlow
     private val _messagesFlow = MutableStateFlow<MessageState>(MessageState.Loading)
 
-    init {
+    fun provideMessageList(){
         viewModelScope.launch {
             try {
                 provideInbox

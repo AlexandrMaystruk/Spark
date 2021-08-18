@@ -1,4 +1,4 @@
-package com.gmail.maystruks08.spark.di.detail
+package com.gmail.maystruks08.spark.di.inbox.detail
 
 import javax.inject.Scope
 

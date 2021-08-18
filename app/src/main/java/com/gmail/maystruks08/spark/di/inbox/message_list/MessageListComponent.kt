@@ -1,4 +1,4 @@
-package com.gmail.maystruks08.spark.di.inbox
+package com.gmail.maystruks08.spark.di.inbox.message_list
 
 import com.gmail.maystruks08.spark.ui.messages.MessagesFragment
 import dagger.Subcomponent

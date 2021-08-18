@@ -18,6 +18,7 @@ class RepositoryImpl @Inject constructor() : Repository {
                 from = "Alex",
                 subject = "Andrey",
                 contentPreview = "I hope my test app is not bad=)",
+                content = "I hope my test app is not bad=)\nI hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)",
                 group = "Others",
                 isRead = false,
                 isDeleted = false
@@ -29,6 +30,7 @@ class RepositoryImpl @Inject constructor() : Repository {
                 subject = "Alex",
                 contentPreview = "You could try to better optimize the user interface.You could try to better optimize the user interface.You could try to better optimize the user interface.You could try to better optimize the user interface.You could try to better optimize the user interface.You could try to better optimize the user interface.You could try to better optimize the user interface.You could try to better optimize the user interface.You could try to better optimize the user interface.You could try to better optimize the user interface",
                 group = "Others",
+                content = "I hope my test app is not bad=)\nI hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)",
                 isRead = false,
                 isDeleted = false
             ),
@@ -39,6 +41,7 @@ class RepositoryImpl @Inject constructor() : Repository {
                 subject = "Alex",
                 contentPreview = "You could try to better optimize the user interface",
                 group = "Others",
+                content = "I hope my test app is not bad=)\nI hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)",
                 isRead = false,
                 isDeleted = false
             ),
@@ -49,6 +52,7 @@ class RepositoryImpl @Inject constructor() : Repository {
                 subject = "Andrey",
                 contentPreview = "I hope my test app is not bad=)",
                 group = "Personal",
+                content = "I hope my test app is not bad=)\nI hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)",
                 isRead = false,
                 isDeleted = false
             ),
@@ -59,6 +63,7 @@ class RepositoryImpl @Inject constructor() : Repository {
                 subject = "Alex",
                 contentPreview = "You could try to better optimize the user interface",
                 group = "Personal",
+                content = "I hope my test app is not bad=)\nI hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)",
                 isRead = false,
                 isDeleted = false
             ),
@@ -69,6 +74,7 @@ class RepositoryImpl @Inject constructor() : Repository {
                 subject = "Alex",
                 contentPreview = "You could try to better optimize the user interface",
                 group = "Notification",
+                content = "I hope my test app is not bad=)\nI hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)",
                 isRead = false,
                 isDeleted = false
             ),
@@ -79,6 +85,7 @@ class RepositoryImpl @Inject constructor() : Repository {
                 subject = "Alex",
                 contentPreview = "You could try to better optimize the user interface",
                 group = "Notification",
+                content = "I hope my test app is not bad=)\nI hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)",
                 isRead = false,
                 isDeleted = false
             ),
@@ -89,6 +96,7 @@ class RepositoryImpl @Inject constructor() : Repository {
                 subject = "Alex",
                 contentPreview = "You could try to better optimize the user interface",
                 group = "Notification",
+                content = "I hope my test app is not bad=)\nI hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)",
                 isRead = false,
                 isDeleted = false
             ),
@@ -99,6 +107,7 @@ class RepositoryImpl @Inject constructor() : Repository {
                 subject = "Alex",
                 contentPreview = "You could try to better optimize the user interface",
                 group = "Notification",
+                content = "I hope my test app is not bad=)\nI hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)",
                 isRead = false,
                 isDeleted = false
             ),
@@ -109,6 +118,7 @@ class RepositoryImpl @Inject constructor() : Repository {
                 subject = "Alex",
                 contentPreview = "You could try to better optimize the user interface",
                 group = "Personal",
+                content = "I hope my test app is not bad=)\nI hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)",
                 isRead = false,
                 isDeleted = false
             ),
@@ -119,6 +129,7 @@ class RepositoryImpl @Inject constructor() : Repository {
                 subject = "Alex",
                 contentPreview = "You could try to better optimize the user interface",
                 group = "Personal",
+                content = "I hope my test app is not bad=)\nI hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)",
                 isRead = false,
                 isDeleted = false
             ),
@@ -129,6 +140,7 @@ class RepositoryImpl @Inject constructor() : Repository {
                 subject = "Alex",
                 contentPreview = "You could try to better optimize the user interface",
                 group = "Personal",
+                content = "I hope my test app is not bad=)\nI hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)",
                 isRead = false,
                 isDeleted = false
             ),
@@ -139,6 +151,7 @@ class RepositoryImpl @Inject constructor() : Repository {
                 subject = "Alex",
                 contentPreview = "You could try to better optimize the user interface",
                 group = "Personal",
+                content = "I hope my test app is not bad=)\nI hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)",
                 isRead = false,
                 isDeleted = false
             ),
@@ -149,6 +162,7 @@ class RepositoryImpl @Inject constructor() : Repository {
                 subject = "Alex",
                 contentPreview = "You could try to better optimize the user interface",
                 group = "Personal",
+                content = "I hope my test app is not bad=)\nI hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)",
                 isRead = false,
                 isDeleted = false
             ),
@@ -159,6 +173,7 @@ class RepositoryImpl @Inject constructor() : Repository {
                 subject = "Alex",
                 contentPreview = "You could try to better optimize the user interface",
                 group = "Personal",
+                content = "I hope my test app is not bad=)\nI hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)",
                 isRead = false,
                 isDeleted = false
             ),
@@ -173,5 +188,9 @@ class RepositoryImpl @Inject constructor() : Repository {
         return inbox
             .firstOrNull { it.id == messageId }
             ?: throw MessageNotFoundException("Message with id:$messageId not found")
+    }
+
+    override suspend fun updateMessage(message: Message) {
+
     }
 }

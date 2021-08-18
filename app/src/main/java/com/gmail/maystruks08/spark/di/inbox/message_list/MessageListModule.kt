@@ -1,18 +1,17 @@
-package com.gmail.maystruks08.spark.di.inbox
+package com.gmail.maystruks08.spark.di.inbox.message_list
 
 import androidx.lifecycle.ViewModel
-import com.gmail.maystruks08.data.RepositoryImpl
-import com.gmail.maystruks08.domain.repositories.Repository
 import com.gmail.maystruks08.domain.use_cases.ProvideInboxItemsUseCase
 import com.gmail.maystruks08.domain.use_cases.ProvideInboxItemsUseCaseImpl
 import com.gmail.maystruks08.spark.di.base.ViewModelKey
 import com.gmail.maystruks08.spark.di.base.ViewModelModule
+import com.gmail.maystruks08.spark.di.inbox.InboxModule
 import com.gmail.maystruks08.spark.ui.messages.MessagesViewModel
 import dagger.Binds
 import dagger.Module
 import dagger.multibindings.IntoMap
 
-@Module(includes = [ViewModelModule::class])
+@Module(includes = [ViewModelModule::class, InboxModule::class])
 abstract class MessageListModule {
 
     @IntoMap

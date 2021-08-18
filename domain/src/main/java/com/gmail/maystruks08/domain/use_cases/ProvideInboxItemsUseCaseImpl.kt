@@ -15,7 +15,12 @@ class ProvideInboxItemsUseCaseImpl @Inject constructor(
 
     override suspend operator fun invoke(): Flow<Map<String, List<Message>>> {
         return flow {
-            val sortedMessages = repository.provideInboxData().sortedBy { it.date }.groupBy { it.group }
+            val sortedMessages = repository.provideInboxData()
+                .asSequence()
+                .filter { !it.isDeleted }
+                .sortedBy { it.date }
+                .toList()
+                .groupBy { it.group }
             emit(sortedMessages)
         }.flowOn(coroutineDispatchers.io())
     }

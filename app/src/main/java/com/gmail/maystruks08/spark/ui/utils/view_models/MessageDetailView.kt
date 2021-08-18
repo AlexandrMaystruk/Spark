@@ -6,7 +6,7 @@ data class MessageDetailView(
     val from: String,
     val subject: String,
     val content: String,
-    val isRead: Boolean,
-    val isDeleted: Boolean
+    var isRead: Boolean,
+    var isDeleted: Boolean
 )
 

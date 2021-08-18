@@ -13,6 +13,7 @@ import com.gmail.maystruks08.spark.databinding.DetailFragmentBinding
 import com.gmail.maystruks08.spark.ui.base.BaseFragment
 import com.gmail.maystruks08.spark.ui.utils.injectViewModel
 import com.gmail.maystruks08.spark.ui.utils.toolbar.FragmentToolbar
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.flow.collect
 import javax.inject.Inject
 
@@ -22,6 +23,7 @@ class DetailFragment : BaseFragment() {
     lateinit var viewModel: DetailViewModel
 
     private var binding: DetailFragmentBinding? = null
+    private var snackBar: Snackbar? = null
     private val args: DetailFragmentArgs by navArgs()
 
     override fun injectDependency() {
@@ -51,15 +53,28 @@ class DetailFragment : BaseFragment() {
             lifecycleScope.launchWhenStarted {
                 selectedMessage.collect(::renderViewState)
             }
+            lifecycleScope.launchWhenStarted {
+                buttonState.collect(::renderButtonsViewState)
+            }
+
         }
     }
 
     override fun initViews() {
         viewModel.requireMessage(args.messageId)
+        binding?.run {
+            tvChangeReadStatus.setOnClickListener {
+                viewModel.onChangeReadStatusClicked(args.messageId)
+            }
+            tvDeleteMessage.setOnClickListener {
+                viewModel.onDeleteMessageClicked(args.messageId)
+            }
+        }
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
+        snackBar?.dismiss()
         binding = null
     }
 
@@ -81,6 +96,25 @@ class DetailFragment : BaseFragment() {
                 }
                 is DetailViewState.Error -> {
                     progressBar.visibility = View.GONE
+                    snackBar = Snackbar.make(root, state.message, Snackbar.LENGTH_LONG).also { it.show() }
+                }
+            }
+        }
+    }
+
+    private fun renderButtonsViewState(state: DetailViewButtonState) {
+        binding?.run {
+            when (state) {
+                DetailViewButtonState.Hide -> {
+                    viewButtonBackground.visibility = View.GONE
+                    tvChangeReadStatus.visibility = View.GONE
+                    tvDeleteMessage.visibility = View.GONE
+                }
+                is DetailViewButtonState.Show -> {
+                    tvChangeReadStatus.text = state.readStatusTitle
+                    viewButtonBackground.visibility = View.VISIBLE
+                    tvChangeReadStatus.visibility = View.VISIBLE
+                    tvDeleteMessage.visibility = View.VISIBLE
                 }
             }
         }

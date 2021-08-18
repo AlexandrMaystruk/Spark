@@ -1,4 +1,4 @@
-package com.gmail.maystruks08.spark.di
+package com.gmail.maystruks08.spark.di.app
 
 import dagger.Module
 

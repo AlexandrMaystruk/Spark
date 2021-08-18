@@ -1,4 +1,4 @@
-package com.gmail.maystruks08.spark.di
+package com.gmail.maystruks08.spark.di.app
 
 import com.gmail.maystruks08.domain.dispatchers.CoroutineDispatchers
 import com.gmail.maystruks08.domain.dispatchers.CoroutineDispatchersImpl

@@ -1,6 +1,7 @@
 package com.gmail.maystruks08.spark.ui.messages
 
 import android.content.res.Resources
+import androidx.annotation.StringRes
 import com.gmail.maystruks08.domain.entity.Message
 import com.gmail.maystruks08.spark.R
 import com.gmail.maystruks08.spark.ui.utils.toPrintFormat
@@ -42,6 +43,10 @@ class InboxViewMapper @Inject constructor(private val resources: Resources) {
         return message.run {
             MessageView(id, date.toString(), subject)
         }
+    }
+
+    fun getString(@StringRes id: Int): String {
+        return resources.getString(id)
     }
 }
 
