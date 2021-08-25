@@ -49,4 +49,5 @@ fun DependencyHandlerScope.retrofit() {
     api(Dependencies.retrofit.converterGson)
     api(Dependencies.retrofit.interceptor)
     api(Dependencies.retrofit.retrofitCoroutines)
+    api(Dependencies.jetpack.paging)
 }

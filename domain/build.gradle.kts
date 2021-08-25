@@ -12,6 +12,7 @@ dependencies {
     core()
     di()
     async()
+    paging()
 }
 
 fun DependencyHandlerScope.core() {
@@ -24,4 +25,8 @@ fun DependencyHandlerScope.di() {
 
 fun DependencyHandlerScope.async() {
     implementation(Dependencies.async.coroutinesCore)
+}
+
+fun DependencyHandlerScope.paging() {
+    implementation(Dependencies.jetpack.pagingCommon)
 }

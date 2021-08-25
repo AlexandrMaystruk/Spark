@@ -8,4 +8,7 @@ object Jetpack {
 
     const val navigationFragment = "androidx.navigation:navigation-fragment-ktx:${Versions.navigation}"
     const val navigationUi = "androidx.navigation:navigation-ui-ktx:${Versions.navigation}"
+    const val paging = "androidx.paging:paging-runtime:${Versions.paging}"
+    const val pagingCommon = "androidx.paging:paging-common-ktx:${Versions.pagingCommon}"
+
 }

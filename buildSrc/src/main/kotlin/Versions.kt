@@ -30,7 +30,8 @@ object Versions {
     const val timber = "4.7.1"
 
     // architecture components
-    const val startup = "1.0.0"
+    const val paging = "3.0.0-alpha03"
+    const val pagingCommon = "3.0.1"
 
     // test
     const val mockWebServer = "4.9.1"

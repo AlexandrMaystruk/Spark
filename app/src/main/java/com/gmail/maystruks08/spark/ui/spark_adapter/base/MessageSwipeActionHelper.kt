@@ -14,22 +14,22 @@ abstract class MessageSwipeActionHelper(
     context: Context
 ) : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
 
-    private val offTrackIcon: Drawable? = ContextCompat.getDrawable(context, R.drawable.ic_search)
-    private val offTrackBg: Drawable
+    private val deleteIcon: Drawable? = ContextCompat.getDrawable(context, R.drawable.ic_delete)
+    private val deleteBg: Drawable
 
-    private val markAsReadIcon = ContextCompat.getDrawable(context, R.drawable.ic_search)
-    private val deleteMessageIcon: Drawable
+    private val markAsReadIcon = ContextCompat.getDrawable(context, R.drawable.ic_mark_email_read)
+    private val markAsReadBg: Drawable
 
     private var prevDX = -1f
 
     init {
-        offTrackBg = GradientDrawable().apply {
+        deleteBg = GradientDrawable().apply {
             shape = GradientDrawable.RECTANGLE
             setColor(ContextCompat.getColor(context, R.color.design_dark_default_color_error))
         }
-        deleteMessageIcon = GradientDrawable().apply {
+        markAsReadBg = GradientDrawable().apply {
             shape = GradientDrawable.RECTANGLE
-            setColor(ContextCompat.getColor(context, R.color.design_dark_default_color_error))
+            setColor(ContextCompat.getColor(context, R.color.teal_200))
         }
     }
 
@@ -58,11 +58,11 @@ abstract class MessageSwipeActionHelper(
         when {
             //Swipe left
             dX < 0 -> {
-                offTrackIcon?.let {
+                deleteIcon?.let {
                     val iconTop = itemView.top + (itemHeight - it.intrinsicHeight) / 2
                     val iconMargin = (itemHeight - it.intrinsicHeight) / 3
                     val iconBottom = iconTop + it.intrinsicHeight
-                    offTrackBg.setBounds(
+                    deleteBg.setBounds(
                         itemView.right + dX.toInt(),
                         itemView.top,
                         itemView.right,
@@ -71,7 +71,7 @@ abstract class MessageSwipeActionHelper(
                     val iconRight = itemView.right - iconMargin
                     val iconLeft = itemView.right - it.intrinsicWidth - iconMargin
                     it.setBounds(iconLeft, iconTop, iconRight, iconBottom)
-                    offTrackBg.draw(c)
+                    deleteBg.draw(c)
                     it.draw(c)
                     prevDX = dX
                 }
@@ -82,7 +82,7 @@ abstract class MessageSwipeActionHelper(
                     val iconTop = itemView.top + (itemHeight - it.intrinsicHeight) / 2
                     val iconMargin = (itemHeight - it.intrinsicHeight) / 3
                     val iconBottom = iconTop + it.intrinsicHeight
-                    deleteMessageIcon.setBounds(
+                    markAsReadBg.setBounds(
                         itemView.left,
                         itemView.top,
                         itemView.right + dX.toInt(),
@@ -91,7 +91,7 @@ abstract class MessageSwipeActionHelper(
                     val iconLeft = itemView.left + iconMargin
                     val iconRight = itemView.left + it.intrinsicWidth + iconMargin
                     it.setBounds(iconLeft, iconTop, iconRight, iconBottom)
-                    deleteMessageIcon.draw(c)
+                    markAsReadBg.draw(c)
                     it.draw(c)
                     prevDX = dX
                 }

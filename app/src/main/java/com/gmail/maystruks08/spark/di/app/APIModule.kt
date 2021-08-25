@@ -29,8 +29,8 @@ object APIModule {
         .addCallAdapterFactory(CoroutineCallAdapterFactory())
         .build()
 
-    @Provides
-    @Singleton
-    fun provideApi(retrofit: Retrofit): InboxApi = retrofit.create(InboxApi::class.java)
+//    @Provides
+//    @Singleton
+//    fun provideApi(retrofit: Retrofit): InboxApi = retrofit.create(InboxApi::class.java)
 
 }

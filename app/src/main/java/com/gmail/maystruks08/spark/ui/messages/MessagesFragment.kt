@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.NavHostFragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.gmail.maystruks08.spark.App
 import com.gmail.maystruks08.spark.R
@@ -16,12 +17,15 @@ import com.gmail.maystruks08.spark.ui.base.BaseFragment
 import com.gmail.maystruks08.spark.ui.spark_adapter.SparkAdapter
 import com.gmail.maystruks08.spark.ui.spark_adapter.base.MessageSwipeActionHelper
 import com.gmail.maystruks08.spark.ui.utils.injectViewModel
+import com.gmail.maystruks08.spark.ui.utils.observeInLifecycle
 import com.gmail.maystruks08.spark.ui.utils.toolbar.FragmentToolbar
 import com.gmail.maystruks08.spark.ui.utils.view_models.BottomView
 import com.gmail.maystruks08.spark.ui.utils.view_models.MessageView
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
+
 
 class MessagesFragment : BaseFragment(),
     MessageItemController.Interaction,
@@ -78,6 +82,11 @@ class MessagesFragment : BaseFragment(),
             lifecycleScope.launchWhenStarted {
                 messages.collect(::renderViewState)
             }
+            lifecycleScope.launchWhenResumed {
+                navigation
+                    .onEach(::renderNavigationState)
+                    .observeInLifecycle(this@MessagesFragment)
+            }
         }
     }
 
@@ -90,12 +99,19 @@ class MessagesFragment : BaseFragment(),
      * Adapter interactions
      */
     override fun onClicked(item: MessageView) {
-        val action = MessagesFragmentDirections.actionMessagesFragmentToDetailFragment(item.id, item.subject)
-        findNavController(this).navigate(action)
+        viewModel.onMessageItemClicked(item)
     }
 
-    override fun onLongClicked(item: MessageView) {
-        viewModel.onMessageItemLongClicked(item)
+    override fun onReadMessageClicked(item: MessageView) {
+        viewModel.onReadMessageItemClicked(item)
+    }
+
+    override fun onUnreadMessageClicked(item: MessageView) {
+        viewModel.onUnreadMessageItemClicked(item)
+    }
+
+    override fun onDeleteMessageClicked(item: MessageView) {
+        viewModel.onDeleteMessageClicked(item)
     }
 
     override fun onViewAllClicked(item: BottomView) {
@@ -112,6 +128,18 @@ class MessagesFragment : BaseFragment(),
         App.clearMessageListComponent()
     }
 
+    private fun renderNavigationState(state: NavigationState) {
+        when (state) {
+            NavigationState.Nothing -> Unit
+            is NavigationState.OpenDetailScreen -> {
+                val action = MessagesFragmentDirections.actionMessagesFragmentToDetailFragment(
+                    state.item.id,
+                    state.item.subject
+                )
+                findNavController(this).navigate(action)
+            }
+        }
+    }
 
     private fun renderViewState(state: MessageState) {
         binding?.run {
@@ -135,6 +163,19 @@ class MessagesFragment : BaseFragment(),
         binding?.run {
             rvMessages.adapter = messageAdapter
             setUpItemTouchHelper()
+
+            val layoutManager = rvMessages.layoutManager
+            rvMessages.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+                override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                    super.onScrollStateChanged(recyclerView, newState)
+                    if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                        val totalItemCount = layoutManager?.itemCount ?: 0
+                        var firstVisibleItemPosition = 0
+                        if (layoutManager is LinearLayoutManager) firstVisibleItemPosition = layoutManager.findLastVisibleItemPosition()
+                        if (firstVisibleItemPosition + 5 >= totalItemCount) viewModel.loadMoreData()
+                    }
+                }
+            })
         }
     }
 
@@ -154,5 +195,4 @@ class MessagesFragment : BaseFragment(),
         }
         ItemTouchHelper(messageSwipeActionHelper).attachToRecyclerView(binding?.rvMessages)
     }
-
 }

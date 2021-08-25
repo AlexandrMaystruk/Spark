@@ -6,6 +6,7 @@ import com.gmail.maystruks08.spark.App
 import com.gmail.maystruks08.spark.MainActivity
 import com.gmail.maystruks08.spark.di.inbox.detail.DetailComponent
 import com.gmail.maystruks08.spark.di.inbox.message_list.MessageListComponent
+import com.gmail.maystruks08.spark.services.FCMNotificationServiceMock
 import dagger.Component
 import javax.inject.Singleton
 
@@ -24,4 +25,6 @@ interface AppComponent {
     fun inject(app: App)
 
     fun inject(app: MainActivity)
+
+    fun inject(app: FCMNotificationServiceMock)
 }

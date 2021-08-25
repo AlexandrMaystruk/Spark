@@ -26,7 +26,7 @@ class SparkAdapter(
     }
 
     override fun onBindViewHolder(holder: BaseViewHolder<ViewBinding, Item>, position: Int) {
-        holder.onBind(getItem(position))
+        getItem(position)?.let { holder.onBind(it) }
     }
 
     override fun onBindViewHolder(
@@ -34,19 +34,21 @@ class SparkAdapter(
         position: Int,
         payloads: MutableList<Any>
     ) {
-        val item = getItem(position)
-        if (payloads.isNotEmpty()) {
-            holder.onBind(item, payloads)
-            return
+        getItem(position)?.let {
+            if (payloads.isNotEmpty()) {
+                holder.onBind(it, payloads)
+                return
+            }
+            holder.onBind(it)
         }
-        holder.onBind(item)
     }
 
     override fun getItemViewType(position: Int): Int {
-        val item = getItem(position)
-        return list.find { it.isRelativeItem(item) }
-            ?.getLayoutId()
-            ?: throw IllegalArgumentException("View type not found: $item")
+        return getItem(position)?.let { item ->
+            list.find { it.isRelativeItem(item) }
+                ?.getLayoutId()
+                ?: throw IllegalArgumentException("View type not found: $item")
+        } ?: throw IllegalArgumentException("View type not found for position $position")
     }
 }
 

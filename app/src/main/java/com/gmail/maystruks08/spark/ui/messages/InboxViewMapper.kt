@@ -17,7 +17,7 @@ class InboxViewMapper @Inject constructor(private val resources: Resources) {
                 date.toPrintFormat(),
                 from,
                 subject,
-                contentPreview,
+                content,
                 isRead,
                 isDeleted
             )
@@ -37,12 +37,11 @@ class InboxViewMapper @Inject constructor(private val resources: Resources) {
 
     private fun toViews(messages: List<Message>): List<MessageView> {
         return messages.map { toView(it) }
-
     }
 
-    private fun toView(message: Message): MessageView {
+    fun toView(message: Message): MessageView {
         return message.run {
-            MessageView(id, date.toString(), subject)
+            MessageView(id, date.toString(), subject, isRead)
         }
     }
 

@@ -1,6 +1,7 @@
 package com.gmail.maystruks08.spark
 
 import android.app.Application
+import android.content.Context
 import com.gmail.maystruks08.spark.di.app.AppComponent
 import com.gmail.maystruks08.spark.di.app.AppModule
 import com.gmail.maystruks08.spark.di.app.DaggerAppComponent

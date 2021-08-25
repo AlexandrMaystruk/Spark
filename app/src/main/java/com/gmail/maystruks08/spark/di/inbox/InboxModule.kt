@@ -1,7 +1,5 @@
 package com.gmail.maystruks08.spark.di.inbox
 
-import com.gmail.maystruks08.data.RepositoryImpl
-import com.gmail.maystruks08.domain.repositories.Repository
 import com.gmail.maystruks08.domain.use_cases.*
 import dagger.Binds
 import dagger.Module
@@ -19,5 +17,5 @@ interface InboxModule {
     fun bindSwitchReadReadMessageStateUseCase(impl: SwitchReadReadMessageStateUseCaseImpl): SwitchReadReadMessageStateUseCase
 
     @Binds
-    fun bindRepository(impl: RepositoryImpl): Repository
+    fun bindProvidePagingInboxItemsUseCase(impl: ProvidePagingInboxItemsUseCaseImpl): ProvidePagingInboxItemsUseCase
 }

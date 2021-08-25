@@ -1,7 +1,9 @@
 package com.gmail.maystruks08.spark.ui.messages
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.widget.PopupMenu
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.gmail.maystruks08.spark.R
@@ -10,6 +12,7 @@ import com.gmail.maystruks08.spark.ui.spark_adapter.base.BaseViewHolder
 import com.gmail.maystruks08.spark.ui.spark_adapter.base.Item
 import com.gmail.maystruks08.spark.ui.spark_adapter.base.ItemSparkAdapter
 import com.gmail.maystruks08.spark.ui.utils.view_models.MessageView
+
 
 class MessageItemController(
     private val interaction: Interaction
@@ -38,7 +41,7 @@ class MessageItemController(
             oldItem == newItem
 
         override fun getChangePayload(oldItem: MessageView, newItem: MessageView): Any? {
-            val payloads = MessagePayloads(isMessageStatusChanged = true)
+            val payloads = MessagePayloads(isMessageStatusChanged = oldItem.isRead != newItem.isRead)
             return if (payloads.isAnyChanges()) payloads
             else super.getChangePayload(oldItem, newItem)
         }
@@ -46,7 +49,9 @@ class MessageItemController(
 
     interface Interaction {
         fun onClicked(item: MessageView)
-        fun onLongClicked(item: MessageView)
+        fun onReadMessageClicked(item: MessageView)
+        fun onUnreadMessageClicked(item: MessageView)
+        fun onDeleteMessageClicked(item: MessageView)
     }
 }
 
@@ -63,7 +68,7 @@ class MessageViewHolder(
 
         binding.root.setOnLongClickListener {
             if (adapterPosition == RecyclerView.NO_POSITION) return@setOnLongClickListener false
-            interaction.onLongClicked(item)
+            showPopUpMenu(item)
             return@setOnLongClickListener true
         }
     }
@@ -72,6 +77,7 @@ class MessageViewHolder(
         super.onBind(item)
         with(binding) {
             tvMessageFrom.text = item.subject
+            renderStatus(item)
         }
     }
 
@@ -86,10 +92,36 @@ class MessageViewHolder(
         }
     }
 
-    private fun ItemMessageBinding.renderStatus(item: MessageView) {
-
+    private fun showPopUpMenu(item: MessageView) {
+        with(binding) {
+            PopupMenu(root.context, root).apply {
+                inflate(R.menu.menu_item_pop_up)
+                if (item.isRead) menu.removeItem(R.id.action_read)
+                else menu.removeItem(R.id.action_unread)
+                setOnMenuItemClickListener(PopupMenu.OnMenuItemClickListener {
+                    return@OnMenuItemClickListener when (it.itemId) {
+                        R.id.action_read -> {
+                            interaction.onReadMessageClicked(item)
+                            true
+                        }
+                        R.id.action_unread -> {
+                            interaction.onUnreadMessageClicked(item)
+                            true
+                        }
+                        R.id.action_delete -> {
+                            interaction.onDeleteMessageClicked(item)
+                            true
+                        }
+                        else -> false
+                    }
+                })
+            }.show()
+        }
     }
 
+    private fun ItemMessageBinding.renderStatus(item: MessageView) {
+        vStateIndicator.visibility = if (item.isRead) View.INVISIBLE else View.VISIBLE
+    }
 }
 
 

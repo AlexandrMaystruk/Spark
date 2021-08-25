@@ -1,28 +1,47 @@
 package com.gmail.maystruks08.spark.ui.messages
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.gmail.maystruks08.spark.services.FirebaseServiceBus
 import com.gmail.maystruks08.domain.entity.exceptions.MessageNotFoundException
+import com.gmail.maystruks08.domain.use_cases.DeleteMessageUseCase
 import com.gmail.maystruks08.domain.use_cases.ProvideInboxItemsUseCase
+import com.gmail.maystruks08.domain.use_cases.SwitchReadReadMessageStateUseCase
 import com.gmail.maystruks08.spark.ui.spark_adapter.base.Item
 import com.gmail.maystruks08.spark.ui.utils.view_models.BottomView
 import com.gmail.maystruks08.spark.ui.utils.view_models.MessageView
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class MessagesViewModel @Inject constructor(
     private val inboxViewMapper: InboxViewMapper,
-    private val provideInbox: ProvideInboxItemsUseCase
+    private val provideInbox: ProvideInboxItemsUseCase,
+    private val changeMessageUseCase: SwitchReadReadMessageStateUseCase,
+    private val deleteMessageUseCase: DeleteMessageUseCase,
+    private val firebaseServiceBus: FirebaseServiceBus
 ) : ViewModel() {
 
-    val messages get(): StateFlow<MessageState> = _messagesFlow
     private val _messagesFlow = MutableStateFlow<MessageState>(MessageState.Loading)
+    val messages get(): StateFlow<MessageState> = _messagesFlow
 
-    fun provideMessageList(){
+    private val _navigationFlow = Channel<NavigationState>(Channel.BUFFERED)
+    val navigation = _navigationFlow.receiveAsFlow()
+
+    private val _loadMore = MutableStateFlow(Unit)
+
+    init {
+        viewModelScope.launch {
+            firebaseServiceBus
+                .subscribeToEvent()
+                .receiveAsFlow()
+                .collect { updateMessageListState() }
+        }
+    }
+
+    fun provideMessageList() {
         viewModelScope.launch {
             try {
                 provideInbox
@@ -37,31 +56,78 @@ class MessagesViewModel @Inject constructor(
         }
     }
 
-    fun onMessageItemClicked(item: MessageView) {
-
+    fun loadMoreData() {
+        _loadMore.tryEmit(Unit)
     }
 
-    fun onMessageItemLongClicked(item: MessageView) {
+    fun onMessageItemClicked(item: MessageView) {
+        viewModelScope.launch {
+            _navigationFlow.send(NavigationState.OpenDetailScreen(item))
+        }
+    }
 
+    fun onReadMessageItemClicked(item: MessageView) {
+        viewModelScope.launch {
+            try {
+                changeMessageUseCase.invoke(item.id)
+                updateMessageListState()
+            } catch (t: Throwable) {
+                handleError(t)
+            }
+        }
+    }
+
+    fun onUnreadMessageItemClicked(item: MessageView) {
+        viewModelScope.launch {
+            try {
+                deleteMessageUseCase.invoke(item.id)
+                updateMessageListState()
+            } catch (t: Throwable) {
+                handleError(t)
+            }
+        }
+    }
+
+    fun onDeleteMessageClicked(item: MessageView) {
+        viewModelScope.launch {
+            try {
+                deleteMessageUseCase.invoke(item.id)
+                updateMessageListState()
+            } catch (t: Throwable) {
+                handleError(t)
+            }
+        }
     }
 
     fun onShowAllMessageFromGroupClicked(item: BottomView) {
-
+        //TODO
     }
 
     fun onMessageSwipedLeft(swipedMessage: Item) {
-
+        //TODO
     }
 
     fun onMessageSwipedRight(swipedMessage: Item) {
+        //TODO
+    }
 
+    private fun updateMessageListState() {
+        provideMessageList()
     }
 
     private fun handleInboxLoadingError(throwable: Throwable) {
+        Log.e("VIEW_MODEL", throwable.stackTraceToString())
         _messagesFlow.value = when (throwable) {
             is MessageNotFoundException -> MessageState.Error("Message not found")
             else -> MessageState.Error("Internal error")
         }
     }
 
+    private fun handleError(throwable: Throwable) {
+        Log.e("VIEW_MODEL", throwable.stackTraceToString())
+        _messagesFlow.value = when (throwable) {
+            is MessageNotFoundException -> MessageState.Error("Message not found")
+            else -> MessageState.Error("Internal error")
+        }
+    }
 }
