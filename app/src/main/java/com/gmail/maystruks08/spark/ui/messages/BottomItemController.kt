@@ -58,6 +58,7 @@ class BottomViewHolder(
     override fun onBind(item: BottomView) {
         super.onBind(item)
         with(binding) {
+            tvStickyMessageTitle.text = item.title
         }
     }
 

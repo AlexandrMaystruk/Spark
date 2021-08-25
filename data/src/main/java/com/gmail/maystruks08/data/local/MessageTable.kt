@@ -16,7 +16,7 @@ data class MessageTable(
     val subject: String,
     val contentPreview: String,
     val content: String,
-    val group: String,
+    val messageGroup: String,
     val isRead: Boolean,
     val isDeleted: Boolean,
     val isNeedToSync: Boolean = false

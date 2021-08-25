@@ -2,9 +2,9 @@ package com.gmail.maystruks08.data
 
 import com.gmail.maystruks08.data.local.MessagesDAO
 import com.gmail.maystruks08.data.remote.InboxApi
-import com.gmail.maystruks08.domain.Cursor
-import com.gmail.maystruks08.domain.PagedData
+import com.gmail.maystruks08.domain.entity.Cursor
 import com.gmail.maystruks08.domain.entity.Message
+import com.gmail.maystruks08.domain.entity.PagedData
 import com.gmail.maystruks08.domain.entity.exceptions.MessageNotFoundException
 import com.gmail.maystruks08.domain.repositories.Repository
 import kotlinx.coroutines.delay
@@ -30,7 +30,7 @@ class RepositoryImpl @Inject constructor(
             )
         }
 
-        delay(2000)
+        delay(1000)
         val response = inboxService.getInboxMessagesMock(newAfter = cursor?.newAfter, pageSize = PAGE_SIZE)
         val responseBody = response.body()
         val responseData = responseBody?.data
@@ -49,8 +49,8 @@ class RepositoryImpl @Inject constructor(
         )
     }
 
-    override suspend fun provideInboxData(): List<Message> {
-        val localeMessages = messageDAO.fetchAllMessages()
+    override suspend fun provideInboxData(group: String): List<Message> {
+        val localeMessages = messageDAO.fetchAllMessagesByGroup(group)
         return localeMessages.map { dataMapper.toEntity(it) }
     }
 

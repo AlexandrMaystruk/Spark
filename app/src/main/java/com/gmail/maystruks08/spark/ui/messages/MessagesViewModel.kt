@@ -3,9 +3,10 @@ package com.gmail.maystruks08.spark.ui.messages
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.gmail.maystruks08.domain.Cursor
+import com.gmail.maystruks08.domain.entity.Cursor
 import com.gmail.maystruks08.domain.entity.exceptions.MessageNotFoundException
 import com.gmail.maystruks08.domain.use_cases.DeleteMessageUseCase
+import com.gmail.maystruks08.domain.use_cases.ProvideInboxItemsUseCase
 import com.gmail.maystruks08.domain.use_cases.ProvidePagingInboxItemsUseCase
 import com.gmail.maystruks08.domain.use_cases.SwitchReadReadMessageStateUseCase
 import com.gmail.maystruks08.spark.services.FirebaseServiceBus
@@ -19,6 +20,7 @@ import javax.inject.Inject
 
 class MessagesViewModel @Inject constructor(
     private val inboxViewMapper: InboxViewMapper,
+    private val provideInboxItemsUseCase: ProvideInboxItemsUseCase,
     private val providePagingInboxItemsUseCase: ProvidePagingInboxItemsUseCase,
     private val changeMessageUseCase: SwitchReadReadMessageStateUseCase,
     private val deleteMessageUseCase: DeleteMessageUseCase,
@@ -53,12 +55,11 @@ class MessagesViewModel @Inject constructor(
                         inboxViewMapper.toInboxView(it.data)
                     }
                     .collect {
-                        (_messagesFlow.value as? MessageState.ShowInboxList)?.apply {
-                            val messageViews = this.data.toMutableList().apply { addAll(it) }
-                            _messagesFlow.value = MessageState.ShowInboxList(messageViews)
-                        } ?: kotlin.run {
-                            _messagesFlow.value = MessageState.ShowInboxList(it)
-                        }
+                        _messagesFlow.value = MessageState.ShowInboxList(
+                            (_messagesFlow.value as? MessageState.ShowInboxList)?.let { previousState ->
+                                previousState.data.toMutableList().apply { addAll(it) }
+                            } ?: kotlin.run { it }
+                        )
                     }
             } catch (t: Throwable) {
                 handleInboxLoadingError(t)
@@ -106,7 +107,14 @@ class MessagesViewModel @Inject constructor(
     }
 
     fun onShowAllMessageFromGroupClicked(item: BottomView) {
-        //TODO
+        viewModelScope.launch {
+            provideInboxItemsUseCase
+                .invoke(item.group)
+                .map { messages -> messages.map { inboxViewMapper.toView(it) } }
+                .collect {
+                    _messagesFlow.value = MessageState.ShowInboxList(it)
+                }
+        }
     }
 
     fun onMessageSwipedLeft(swipedMessage: Item) {

@@ -30,7 +30,13 @@ class InboxViewMapper @Inject constructor(private val resources: Resources) {
                 if (messages.isEmpty()) return@forEach
                 add(StickyView(R.drawable.ic_pin, group))
                 addAll(toViews(messages))
-                add(BottomView(resources.getString(R.string.action_show_all)))
+                val title = "${getString(R.string.action_show_all)} ${messages.count()}"
+                add(
+                    BottomView(
+                        title = title,
+                        group = group
+                    )
+                )
             }
         }
     }

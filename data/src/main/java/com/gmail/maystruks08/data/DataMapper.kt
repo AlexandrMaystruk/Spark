@@ -21,7 +21,7 @@ class DataMapper @Inject constructor() {
                 content = content,
                 isRead = isRead,
                 isDeleted = isDeleted,
-                group = group,
+                messageGroup = group,
                 date = date
             )
         }
@@ -37,7 +37,7 @@ class DataMapper @Inject constructor() {
                 content = content,
                 isRead = isRead,
                 isDeleted = isDeleted,
-                group = group,
+                messageGroup = group,
                 date = date
             )
         }
@@ -71,7 +71,7 @@ class DataMapper @Inject constructor() {
                 content = content,
                 isRead = isRead,
                 isDeleted = isDeleted,
-                group = group,
+                group = messageGroup,
                 date = date
             )
         }

@@ -5,6 +5,6 @@ import kotlinx.coroutines.flow.Flow
 
 interface ProvideInboxItemsUseCase {
 
-    suspend operator fun invoke(): Flow<Map<String, List<Message>>>
+    suspend operator fun invoke(group: String): Flow<List<Message>>
 
 }

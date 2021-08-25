@@ -1,8 +1,8 @@
 package com.gmail.maystruks08.domain.use_cases
 
-import com.gmail.maystruks08.domain.Cursor
-import com.gmail.maystruks08.domain.PagedData
+import com.gmail.maystruks08.domain.entity.Cursor
 import com.gmail.maystruks08.domain.entity.Message
+import com.gmail.maystruks08.domain.entity.PagedData
 import kotlinx.coroutines.flow.Flow
 
 interface ProvidePagingInboxItemsUseCase {

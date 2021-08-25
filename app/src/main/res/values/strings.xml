@@ -6,7 +6,7 @@
 
     <string name="action_search">Search</string>
 
-    <string name="action_show_all">Show all</string>
+    <string name="action_show_all">View all</string>
 
     <string name="action_read">Read</string>
     <string name="action_unread">Unread</string>

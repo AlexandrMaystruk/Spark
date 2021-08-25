@@ -1,11 +1,12 @@
 package com.gmail.maystruks08.data.remote
 
 import com.gmail.maystruks08.data.pojo.MessageDto
-import com.gmail.maystruks08.domain.Cursor
+import com.gmail.maystruks08.domain.entity.Cursor
 import okhttp3.ResponseBody
 import retrofit2.Response
 import java.util.*
 import javax.inject.Inject
+import kotlin.random.Random
 
 
 class InboxApi @Inject constructor() {
@@ -43,7 +44,7 @@ class InboxApi @Inject constructor() {
         val startIndex = inbox.indexOfFirst { it.id == newAfter }
         if (startIndex == -1) return Response.error(
             404,
-            ResponseBody.create(null, "Haven't element after")
+            ResponseBody.create(null, "Haven't elements after")
         )
         var endIndex = startIndex + pageSize
         if (endIndex > inbox.lastIndex) {
@@ -57,481 +58,38 @@ class InboxApi @Inject constructor() {
     }
 
     companion object {
-        private val inbox = listOf(
-            MessageDto(
-                id = UUID.randomUUID().toString(),
-                date = Date(),
-                from = "Alex",
-                subject = "Andrey",
-                contentPreview = "I hope my test app is not bad=)",
-                content = "I hope my test app is not bad=)\nI hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)",
-                group = "Others",
-                isRead = false,
-                isDeleted = false
-            ),
-            MessageDto(
-                id = UUID.randomUUID().toString(),
-                date = Date(),
-                from = "Andrey",
-                subject = "Alex",
-                contentPreview = "You could try to better optimize the user interface.You could try to better optimize the user interface.You could try to better optimize the user interface.You could try to better optimize the user interface.You could try to better optimize the user interface.You could try to better optimize the user interface.You could try to better optimize the user interface.You could try to better optimize the user interface.You could try to better optimize the user interface.You could try to better optimize the user interface",
-                group = "Others",
-                content = "I hope my test app is not bad=)\nI hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)",
-                isRead = false,
-                isDeleted = false
-            ),
-            MessageDto(
-                id = UUID.randomUUID().toString(),
-                date = Date(),
-                from = "Andrey",
-                subject = "Alex",
-                contentPreview = "You could try to better optimize the user interface",
-                group = "Others",
-                content = "I hope my test app is not bad=)\nI hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)",
-                isRead = false,
-                isDeleted = false
-            ),
-            MessageDto(
-                id = UUID.randomUUID().toString(),
-                date = Date(),
-                from = "Alex",
-                subject = "Andrey",
-                contentPreview = "I hope my test app is not bad=)",
-                group = "Personal",
-                content = "I hope my test app is not bad=)\nI hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)",
-                isRead = false,
-                isDeleted = false
-            ),
-            MessageDto(
-                id = UUID.randomUUID().toString(),
-                date = Date(),
-                from = "Andrey",
-                subject = "Alex",
-                contentPreview = "You could try to better optimize the user interface",
-                group = "Personal",
-                content = "I hope my test app is not bad=)\nI hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)",
-                isRead = false,
-                isDeleted = false
-            ),
-            MessageDto(
-                id = UUID.randomUUID().toString(),
-                date = Date(),
-                from = "Andrey",
-                subject = "Alex",
-                contentPreview = "You could try to better optimize the user interface",
-                group = "Notification",
-                content = "I hope my test app is not bad=)\nI hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)",
-                isRead = false,
-                isDeleted = false
-            ),
-            MessageDto(
-                id = UUID.randomUUID().toString(),
-                date = Date(),
-                from = "Andrey",
-                subject = "Alex",
-                contentPreview = "You could try to better optimize the user interface",
-                group = "Notification",
-                content = "I hope my test app is not bad=)\nI hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)",
-                isRead = false,
-                isDeleted = false
-            ),
-            MessageDto(
-                id = UUID.randomUUID().toString(),
-                date = Date(),
-                from = "Andrey",
-                subject = "Alex",
-                contentPreview = "You could try to better optimize the user interface",
-                group = "Notification",
-                content = "I hope my test app is not bad=)\nI hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)",
-                isRead = false,
-                isDeleted = false
-            ),
-            MessageDto(
-                id = UUID.randomUUID().toString(),
-                date = Date(),
-                from = "Andrey",
-                subject = "Alex",
-                contentPreview = "You could try to better optimize the user interface",
-                group = "Notification",
-                content = "I hope my test app is not bad=)\nI hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)",
-                isRead = false,
-                isDeleted = false
-            ),
-            MessageDto(
-                id = UUID.randomUUID().toString(),
-                date = Date(),
-                from = "Andrey",
-                subject = "Alex",
-                contentPreview = "You could try to better optimize the user interface",
-                group = "Personal",
-                content = "I hope my test app is not bad=)\nI hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)",
-                isRead = false,
-                isDeleted = false
-            ),
-            MessageDto(
-                id = UUID.randomUUID().toString(),
-                date = Date(),
-                from = "Andrey",
-                subject = "Alex",
-                contentPreview = "You could try to better optimize the user interface",
-                group = "Personal",
-                content = "I hope my test app is not bad=)\nI hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)",
-                isRead = false,
-                isDeleted = false
-            ),
-            MessageDto(
-                id = UUID.randomUUID().toString(),
-                date = Date(),
-                from = "Andrey",
-                subject = "Alex",
-                contentPreview = "You could try to better optimize the user interface",
-                group = "Personal",
-                content = "I hope my test app is not bad=)\nI hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)",
-                isRead = false,
-                isDeleted = false
-            ),
-            MessageDto(
-                id = UUID.randomUUID().toString(),
-                date = Date(),
-                from = "Andrey",
-                subject = "Alex",
-                contentPreview = "You could try to better optimize the user interface",
-                group = "Personal",
-                content = "I hope my test app is not bad=)\nI hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)",
-                isRead = false,
-                isDeleted = false
-            ),
-            MessageDto(
-                id = UUID.randomUUID().toString(),
-                date = Date(),
-                from = "Andrey",
-                subject = "Alex",
-                contentPreview = "You could try to better optimize the user interface",
-                group = "Personal",
-                content = "I hope my test app is not bad=)\nI hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)",
-                isRead = false,
-                isDeleted = false
-            ),
-            MessageDto(
-                id = UUID.randomUUID().toString(),
-                date = Date(),
-                from = "Andrey",
-                subject = "Alex",
-                contentPreview = "You could try to better optimize the user interface",
-                group = "Personal",
-                content = "I hope my test app is not bad=)\nI hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)",
-                isRead = false,
-                isDeleted = false
-            ),
-            MessageDto(
-                id = UUID.randomUUID().toString(),
-                date = Date(),
-                from = "Andrey",
-                subject = "Alex",
-                contentPreview = "You could try to better optimize the user interface",
-                group = "Personal",
-                content = "I hope my test app is not bad=)\nI hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)",
-                isRead = false,
-                isDeleted = false
-            ),
-            MessageDto(
-                id = UUID.randomUUID().toString(),
-                date = Date(),
-                from = "Andrey",
-                subject = "Alex",
-                contentPreview = "You could try to better optimize the user interface",
-                group = "Personal",
-                content = "I hope my test app is not bad=)\nI hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)",
-                isRead = false,
-                isDeleted = false
-            ),
-            MessageDto(
-                id = UUID.randomUUID().toString(),
-                date = Date(),
-                from = "Andrey",
-                subject = "Alex",
-                contentPreview = "You could try to better optimize the user interface",
-                group = "Personal",
-                content = "I hope my test app is not bad=)\nI hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)",
-                isRead = false,
-                isDeleted = false
-            ),
-            MessageDto(
-                id = UUID.randomUUID().toString(),
-                date = Date(),
-                from = "Andrey",
-                subject = "Alex",
-                contentPreview = "You could try to better optimize the user interface",
-                group = "Personal",
-                content = "I hope my test app is not bad=)\nI hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)",
-                isRead = false,
-                isDeleted = false
-            ),
-            MessageDto(
-                id = UUID.randomUUID().toString(),
-                date = Date(),
-                from = "Andrey",
-                subject = "Alex",
-                contentPreview = "You could try to better optimize the user interface",
-                group = "Personal",
-                content = "I hope my test app is not bad=)\nI hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)",
-                isRead = false,
-                isDeleted = false
-            ),
-            MessageDto(
-                id = UUID.randomUUID().toString(),
-                date = Date(),
-                from = "Andrey",
-                subject = "Alex",
-                contentPreview = "You could try to better optimize the user interface",
-                group = "Personal",
-                content = "I hope my test app is not bad=)\nI hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)",
-                isRead = false,
-                isDeleted = false
-            ),
-            MessageDto(
-                id = UUID.randomUUID().toString(),
-                date = Date(),
-                from = "Andrey",
-                subject = "Alex",
-                contentPreview = "You could try to better optimize the user interface",
-                group = "Personal",
-                content = "I hope my test app is not bad=)\nI hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)",
-                isRead = false,
-                isDeleted = false
-            ),
-            MessageDto(
-                id = UUID.randomUUID().toString(),
-                date = Date(),
-                from = "Andrey",
-                subject = "Alex",
-                contentPreview = "You could try to better optimize the user interface",
-                group = "Personal",
-                content = "I hope my test app is not bad=)\nI hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)",
-                isRead = false,
-                isDeleted = false
-            ),
-            MessageDto(
-                id = UUID.randomUUID().toString(),
-                date = Date(),
-                from = "Andrey",
-                subject = "Alex",
-                contentPreview = "You could try to better optimize the user interface",
-                group = "Personal",
-                content = "I hope my test app is not bad=)\nI hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)",
-                isRead = false,
-                isDeleted = false
-            ),
-            MessageDto(
-                id = UUID.randomUUID().toString(),
-                date = Date(),
-                from = "Andrey",
-                subject = "Alex",
-                contentPreview = "You could try to better optimize the user interface",
-                group = "Personal",
-                content = "I hope my test app is not bad=)\nI hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)",
-                isRead = false,
-                isDeleted = false
-            ),
-            MessageDto(
-                id = UUID.randomUUID().toString(),
-                date = Date(),
-                from = "Andrey",
-                subject = "Alex",
-                contentPreview = "You could try to better optimize the user interface",
-                group = "Personal",
-                content = "I hope my test app is not bad=)\nI hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)",
-                isRead = false,
-                isDeleted = false
-            ),
-            MessageDto(
-                id = UUID.randomUUID().toString(),
-                date = Date(),
-                from = "Andrey",
-                subject = "Alex",
-                contentPreview = "You could try to better optimize the user interface",
-                group = "Personal",
-                content = "I hope my test app is not bad=)\nI hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)",
-                isRead = false,
-                isDeleted = false
-            ),
-            MessageDto(
-                id = UUID.randomUUID().toString(),
-                date = Date(),
-                from = "Andrey",
-                subject = "Alex",
-                contentPreview = "You could try to better optimize the user interface",
-                group = "Personal",
-                content = "I hope my test app is not bad=)\nI hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)",
-                isRead = false,
-                isDeleted = false
-            ),
-            MessageDto(
-                id = UUID.randomUUID().toString(),
-                date = Date(),
-                from = "Andrey",
-                subject = "Alex",
-                contentPreview = "You could try to better optimize the user interface",
-                group = "Personal",
-                content = "I hope my test app is not bad=)\nI hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)",
-                isRead = false,
-                isDeleted = false
-            ),
-            MessageDto(
-                id = UUID.randomUUID().toString(),
-                date = Date(),
-                from = "Andrey",
-                subject = "Alex",
-                contentPreview = "You could try to better optimize the user interface",
-                group = "Personal",
-                content = "I hope my test app is not bad=)\nI hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)",
-                isRead = false,
-                isDeleted = false
-            ),
-            MessageDto(
-                id = UUID.randomUUID().toString(),
-                date = Date(),
-                from = "Andrey",
-                subject = "Alex",
-                contentPreview = "You could try to better optimize the user interface",
-                group = "Personal",
-                content = "I hope my test app is not bad=)\nI hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)",
-                isRead = false,
-                isDeleted = false
-            ),
-            MessageDto(
-                id = UUID.randomUUID().toString(),
-                date = Date(),
-                from = "Andrey",
-                subject = "Alex",
-                contentPreview = "You could try to better optimize the user interface",
-                group = "Personal",
-                content = "I hope my test app is not bad=)\nI hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)",
-                isRead = false,
-                isDeleted = false
-            ),
-            MessageDto(
-                id = UUID.randomUUID().toString(),
-                date = Date(),
-                from = "Andrey",
-                subject = "Alex",
-                contentPreview = "You could try to better optimize the user interface",
-                group = "Personal",
-                content = "I hope my test app is not bad=)\nI hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)",
-                isRead = false,
-                isDeleted = false
-            ),
-            MessageDto(
-                id = UUID.randomUUID().toString(),
-                date = Date(),
-                from = "Andrey",
-                subject = "Alex",
-                contentPreview = "You could try to better optimize the user interface",
-                group = "Personal",
-                content = "I hope my test app is not bad=)\nI hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)",
-                isRead = false,
-                isDeleted = false
-            ),
-            MessageDto(
-                id = UUID.randomUUID().toString(),
-                date = Date(),
-                from = "Andrey",
-                subject = "Alex",
-                contentPreview = "You could try to better optimize the user interface",
-                group = "Personal",
-                content = "I hope my test app is not bad=)\nI hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)",
-                isRead = false,
-                isDeleted = false
-            ),
-            MessageDto(
-                id = UUID.randomUUID().toString(),
-                date = Date(),
-                from = "Andrey",
-                subject = "Alex",
-                contentPreview = "You could try to better optimize the user interface",
-                group = "Personal",
-                content = "I hope my test app is not bad=)\nI hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)",
-                isRead = false,
-                isDeleted = false
-            ),
-            MessageDto(
-                id = UUID.randomUUID().toString(),
-                date = Date(),
-                from = "Andrey",
-                subject = "Alex",
-                contentPreview = "You could try to better optimize the user interface",
-                group = "Personal",
-                content = "I hope my test app is not bad=)\nI hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)",
-                isRead = false,
-                isDeleted = false
-            ),
-            MessageDto(
-                id = UUID.randomUUID().toString(),
-                date = Date(),
-                from = "Andrey",
-                subject = "Alex",
-                contentPreview = "You could try to better optimize the user interface",
-                group = "Personal",
-                content = "I hope my test app is not bad=)\nI hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)",
-                isRead = false,
-                isDeleted = false
-            ),
-            MessageDto(
-                id = UUID.randomUUID().toString(),
-                date = Date(),
-                from = "Andrey",
-                subject = "Alex",
-                contentPreview = "You could try to better optimize the user interface",
-                group = "Personal",
-                content = "I hope my test app is not bad=)\nI hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)",
-                isRead = false,
-                isDeleted = false
-            ),
-            MessageDto(
-                id = UUID.randomUUID().toString(),
-                date = Date(),
-                from = "Andrey",
-                subject = "Alex",
-                contentPreview = "You could try to better optimize the user interface",
-                group = "Personal",
-                content = "I hope my test app is not bad=)\nI hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)",
-                isRead = false,
-                isDeleted = false
-            ),
-            MessageDto(
-                id = UUID.randomUUID().toString(),
-                date = Date(),
-                from = "Andrey",
-                subject = "Alex",
-                contentPreview = "You could try to better optimize the user interface",
-                group = "Personal",
-                content = "I hope my test app is not bad=)\nI hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)",
-                isRead = false,
-                isDeleted = false
-            ),
-            MessageDto(
-                id = UUID.randomUUID().toString(),
-                date = Date(),
-                from = "Andrey",
-                subject = "Alex",
-                contentPreview = "You could try to better optimize the user interface",
-                group = "Personal",
-                content = "I hope my test app is not bad=)\nI hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)",
-                isRead = false,
-                isDeleted = false
-            ),
-            MessageDto(
-                id = UUID.randomUUID().toString(),
-                date = Date(),
-                from = "Andrey",
-                subject = "Alex",
-                contentPreview = "You could try to better optimize the user interface",
-                group = "Personal",
-                content = "I hope my test app is not bad=)\nI hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)",
-                isRead = false,
-                isDeleted = false
-            ),
-        )
+
+        private val random = Random(4)
+        private val fromData = listOf("Alex", "Andrey", "Stepan", "Vovan")
+        private val subjectData = listOf("Stat", "Ivan", "Den", "Andrey")
+        private val groupsData = listOf("Others", "Personal", "Notification", "Not important")
+        private val inbox = mutableListOf<MessageDto>().apply {
+            repeat(40) {
+                val randomIndex1 = random.nextInt(0, 3)
+                val randomIndex2 = random.nextInt(0, 3)
+                val groupIndex =  when{
+                    it  < 10 -> 0
+                    it  < 20 -> 1
+                    it  < 30 -> 2
+                    else -> 3
+                }
+                val from = fromData[randomIndex1]
+                val subject = subjectData[randomIndex2]
+                val group = groupsData[groupIndex]
+                val message = MessageDto(
+                    id = it.toString(),
+                    date = Date(),
+                    from = from,
+                    subject = subject,
+                    contentPreview = "I hope my test app is not bad=)",
+                    content = "I hope my test app is not bad=)\nI hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)",
+                    group = group,
+                    isRead = false,
+                    isDeleted = false
+                )
+                add(message)
+            }
+        }
     }
 
     data class ApiResponse(

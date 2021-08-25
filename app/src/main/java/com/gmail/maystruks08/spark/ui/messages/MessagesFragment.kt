@@ -172,7 +172,7 @@ class MessagesFragment : BaseFragment(),
                         val totalItemCount = layoutManager?.itemCount ?: 0
                         var firstVisibleItemPosition = 0
                         if (layoutManager is LinearLayoutManager) firstVisibleItemPosition = layoutManager.findLastVisibleItemPosition()
-                        if (firstVisibleItemPosition + 5 >= totalItemCount) viewModel.loadMoreData()
+                        if (firstVisibleItemPosition + 8 >= totalItemCount) viewModel.loadMoreData()
                     }
                 }
             })
