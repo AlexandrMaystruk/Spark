@@ -17,17 +17,18 @@ class MessagePageDataSource @Inject constructor(
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Message> {
         try {
-            val pageNumber = params.key ?: INITIAL_PAGE_NUMBER
-            val pageSize = params.loadSize.coerceAtMost(MAX_PAGE_SIZE)
-            val response = inboxService.getInboxMessagesMock(page = pageNumber, pageSize = pageSize)
-
-            if (response.isSuccessful) {
-                val messages = response.body()?.map { inboxMapper.toEntity(it) }.orEmpty()
-                val nextPageNumber = if (messages.isEmpty()) null else pageNumber + 1
-                val prevPageNumber = if (pageNumber > 1) pageNumber - 1 else null
-                return LoadResult.Page(messages, prevPageNumber, nextPageNumber)
-            }
-            return LoadResult.Error(HttpException(response))
+//            val pageNumber = params.key ?: INITIAL_PAGE_NUMBER
+//            val pageSize = params.loadSize.coerceAtMost(MAX_PAGE_SIZE)
+//            val response = inboxService.getInboxMessagesMock(page = pageNumber, pageSize = pageSize)
+//
+//            if (response.isSuccessful) {
+//                val messages = response.body()?.map { inboxMapper.toEntity(it) }.orEmpty()
+//                val nextPageNumber = if (messages.isEmpty()) null else pageNumber + 1
+//                val prevPageNumber = if (pageNumber > 1) pageNumber - 1 else null
+//                return LoadResult.Page(messages, prevPageNumber, nextPageNumber)
+//            }
+//            return LoadResult.Error(HttpException(response))
+            return LoadResult.Error(Exception())
         } catch (e: HttpException) {
             return LoadResult.Error(e)
         } catch (e: Exception) {

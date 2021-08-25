@@ -3,11 +3,12 @@ package com.gmail.maystruks08.spark.ui.messages
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.gmail.maystruks08.spark.services.FirebaseServiceBus
+import com.gmail.maystruks08.domain.Cursor
 import com.gmail.maystruks08.domain.entity.exceptions.MessageNotFoundException
 import com.gmail.maystruks08.domain.use_cases.DeleteMessageUseCase
-import com.gmail.maystruks08.domain.use_cases.ProvideInboxItemsUseCase
+import com.gmail.maystruks08.domain.use_cases.ProvidePagingInboxItemsUseCase
 import com.gmail.maystruks08.domain.use_cases.SwitchReadReadMessageStateUseCase
+import com.gmail.maystruks08.spark.services.FirebaseServiceBus
 import com.gmail.maystruks08.spark.ui.spark_adapter.base.Item
 import com.gmail.maystruks08.spark.ui.utils.view_models.BottomView
 import com.gmail.maystruks08.spark.ui.utils.view_models.MessageView
@@ -18,19 +19,19 @@ import javax.inject.Inject
 
 class MessagesViewModel @Inject constructor(
     private val inboxViewMapper: InboxViewMapper,
-    private val provideInbox: ProvideInboxItemsUseCase,
+    private val providePagingInboxItemsUseCase: ProvidePagingInboxItemsUseCase,
     private val changeMessageUseCase: SwitchReadReadMessageStateUseCase,
     private val deleteMessageUseCase: DeleteMessageUseCase,
     private val firebaseServiceBus: FirebaseServiceBus
 ) : ViewModel() {
+
+    private var cursor: Cursor? = null
 
     private val _messagesFlow = MutableStateFlow<MessageState>(MessageState.Loading)
     val messages get(): StateFlow<MessageState> = _messagesFlow
 
     private val _navigationFlow = Channel<NavigationState>(Channel.BUFFERED)
     val navigation = _navigationFlow.receiveAsFlow()
-
-    private val _loadMore = MutableStateFlow(Unit)
 
     init {
         viewModelScope.launch {
@@ -41,23 +42,28 @@ class MessagesViewModel @Inject constructor(
         }
     }
 
-    fun provideMessageList() {
+    fun loadMoreData() {
+        if (cursor?.hasNext == false) return
         viewModelScope.launch {
             try {
-                provideInbox
-                    .invoke()
-                    .map { inboxViewMapper.toInboxView(it) }
+                providePagingInboxItemsUseCase
+                    .invoke(cursor)
+                    .map {
+                        cursor = it.cursor
+                        inboxViewMapper.toInboxView(it.data)
+                    }
                     .collect {
-                        _messagesFlow.value = MessageState.ShowInboxList(it)
+                        (_messagesFlow.value as? MessageState.ShowInboxList)?.apply {
+                            val messageViews = this.data.toMutableList().apply { addAll(it) }
+                            _messagesFlow.value = MessageState.ShowInboxList(messageViews)
+                        } ?: kotlin.run {
+                            _messagesFlow.value = MessageState.ShowInboxList(it)
+                        }
                     }
             } catch (t: Throwable) {
                 handleInboxLoadingError(t)
             }
         }
-    }
-
-    fun loadMoreData() {
-        _loadMore.tryEmit(Unit)
     }
 
     fun onMessageItemClicked(item: MessageView) {
@@ -112,7 +118,8 @@ class MessagesViewModel @Inject constructor(
     }
 
     private fun updateMessageListState() {
-        provideMessageList()
+//       loadMoreData()
+        // provideMessageList()
     }
 
     private fun handleInboxLoadingError(throwable: Throwable) {

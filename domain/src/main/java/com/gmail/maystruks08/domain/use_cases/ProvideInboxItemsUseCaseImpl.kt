@@ -24,5 +24,4 @@ class ProvideInboxItemsUseCaseImpl @Inject constructor(
             emit(sortedMessages)
         }.flowOn(coroutineDispatchers.io())
     }
-
 }

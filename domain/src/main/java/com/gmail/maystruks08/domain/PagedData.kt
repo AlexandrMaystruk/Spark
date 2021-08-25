@@ -1,3 +1,11 @@
 package com.gmail.maystruks08.domain
 
-class PagedData<T>(val hasNext: Boolean, val hasPrevious: Boolean, val data: T)
+data class Cursor(
+    val hasNext: Boolean,
+    val newAfter: String?
+)
+
+class PagedData<T>(
+    val cursor: Cursor,
+    val data: T
+)

@@ -92,7 +92,7 @@ class MessagesFragment : BaseFragment(),
 
     override fun initViews() {
         setupAdapter()
-        viewModel.provideMessageList()
+        viewModel.loadMoreData()
     }
 
     /**

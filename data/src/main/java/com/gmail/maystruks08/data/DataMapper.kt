@@ -3,7 +3,6 @@ package com.gmail.maystruks08.data
 import com.gmail.maystruks08.data.local.MessageTable
 import com.gmail.maystruks08.data.pojo.MessageDto
 import com.gmail.maystruks08.domain.entity.Message
-import java.util.*
 import javax.inject.Inject
 
 class DataMapper @Inject constructor() {
@@ -21,7 +20,9 @@ class DataMapper @Inject constructor() {
                 contentPreview = contentPreview,
                 content = content,
                 isRead = isRead,
-                isDeleted = isDeleted
+                isDeleted = isDeleted,
+                group = group,
+                date = date
             )
         }
     }
@@ -35,7 +36,9 @@ class DataMapper @Inject constructor() {
                 contentPreview = contentPreview,
                 content = content,
                 isRead = isRead,
-                isDeleted = isDeleted
+                isDeleted = isDeleted,
+                group = group,
+                date = date
             )
         }
     }
@@ -51,8 +54,8 @@ class DataMapper @Inject constructor() {
                 content = content,
                 isRead = isRead,
                 isDeleted = isDeleted,
-                group = "",
-                date = Date()
+                group = group,
+                date = date
             )
         }
     }
@@ -68,12 +71,11 @@ class DataMapper @Inject constructor() {
                 content = content,
                 isRead = isRead,
                 isDeleted = isDeleted,
-                group = "",
-                date = Date()
+                group = group,
+                date = date
             )
         }
     }
-
 
     fun mapApiException(t: Throwable): Exception {
         return RuntimeException()

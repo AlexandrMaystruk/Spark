@@ -46,5 +46,4 @@ class StickyViewHolder(binding: ItemStickyBinding) :
             tvStickyMessageTitle.setCompoundDrawablesWithIntrinsicBounds(item.icon, 0, 0, 0)
         }
     }
-
 }

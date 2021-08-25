@@ -8,11 +8,10 @@ import androidx.room.Query
 interface MessagesDAO : BaseDao<MessageTable> {
 
     @Query("SELECT* FROM messages")
-    suspend fun fetchMessages(): List<MessageTable>
+    suspend fun fetchAllMessages(): List<MessageTable>
 
-
-    @Query("SELECT* FROM messages ")
-    suspend fun fetchPagedMessages(): List<MessageTable>
+    @Query("SELECT * FROM messages WHERE date < COALESCE((SELECT date FROM messages WHERE id =:newAfter), CURRENT_DATE) ORDER BY date DESC LIMIT :pageSize")
+    suspend fun fetchPagedMessages(newAfter: String?, pageSize: Int): List<MessageTable>
 
     @Query("SELECT* FROM messages WHERE id =:messageId")
     suspend fun getMessageById(messageId: String): MessageTable?
