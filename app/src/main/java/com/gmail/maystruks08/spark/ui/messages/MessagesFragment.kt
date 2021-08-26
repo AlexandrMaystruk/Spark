@@ -5,12 +5,14 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.NavHostFragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.gmail.maystruks08.spark.App
+import com.gmail.maystruks08.spark.MainActivity
 import com.gmail.maystruks08.spark.R
 import com.gmail.maystruks08.spark.databinding.MessageFragmentBinding
 import com.gmail.maystruks08.spark.ui.base.BaseFragment
@@ -38,6 +40,21 @@ class MessagesFragment : BaseFragment(),
     private var snackBar: Snackbar? = null
 
 
+    private val normalToolbar = FragmentToolbar.Builder()
+        .withMenu(R.menu.menu_search_with_settings)
+        .withSwitch { viewModel.changeInboxMode(it) }
+        .withMenuItems(
+            listOf(R.id.action_search),
+            listOf(MenuItem.OnMenuItemClickListener { true })
+        )
+        .withTitle(R.string.toolbar_inbox)
+        .build()
+
+    private val groupToolbar = FragmentToolbar.Builder()
+        .withNavigationIcon(R.drawable.ic_arrow_back) { requireActivity().onBackPressed() }
+        .withTitle(R.string.toolbar_inbox)
+        .build()
+
     override fun injectDependency() {
         App.messagesComponent?.inject(this)
     }
@@ -51,6 +68,7 @@ class MessagesFragment : BaseFragment(),
                 BottomItemController(this)
             )
         )
+        configCustomBackPressDispatcher()
     }
 
     override fun onCreateView(
@@ -64,18 +82,7 @@ class MessagesFragment : BaseFragment(),
             .root
     }
 
-    override fun builder() = FragmentToolbar.Builder()
-        .withMenu(R.menu.menu_search_with_settings)
-        .withSwitch { viewModel.changeInboxMode(it) }
-        .withMenuItems(
-            listOf(R.id.action_search),
-            listOf(MenuItem.OnMenuItemClickListener {
-                //  viewModel.onClicked()
-                true
-            })
-        )
-        .withTitle(R.string.toolbar_inbox)
-        .build()
+    override fun builder() = FragmentToolbar.Builder().build()
 
     override fun bindViewModel() {
         viewModel = injectViewModel(viewModeFactory)
@@ -86,6 +93,11 @@ class MessagesFragment : BaseFragment(),
             lifecycleScope.launchWhenResumed {
                 navigation
                     .onEach(::renderNavigationState)
+                    .observeInLifecycle(this@MessagesFragment)
+            }
+            lifecycleScope.launchWhenStarted {
+                fragmentToolbar
+                    .onEach(::renderToolbarState)
                     .observeInLifecycle(this@MessagesFragment)
             }
         }
@@ -139,6 +151,14 @@ class MessagesFragment : BaseFragment(),
                 )
                 findNavController(this).navigate(action)
             }
+            NavigationState.Exit -> activity?.finishAndRemoveTask()
+        }
+    }
+
+    private fun renderToolbarState(state: ToolbarMode) {
+        when (state) {
+            is ToolbarMode.WithBackButton -> (activity as MainActivity).configToolbar(groupToolbar)
+            else -> (activity as MainActivity).configToolbar(normalToolbar)
         }
     }
 
@@ -195,5 +215,15 @@ class MessagesFragment : BaseFragment(),
             }
         }
         ItemTouchHelper(messageSwipeActionHelper).attachToRecyclerView(binding?.rvMessages)
+    }
+
+    private fun configCustomBackPressDispatcher() {
+        requireActivity().onBackPressedDispatcher.addCallback(
+            this,
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    viewModel.onBackPressed()
+                }
+            })
     }
 }

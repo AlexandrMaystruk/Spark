@@ -10,6 +10,7 @@ class ToolbarManager constructor(private var fragmentToolbar: Toolbar) {
 
 
     fun prepareToolbar(builder: FragmentToolbar) {
+        fragmentToolbar.menu.clear()
         if (builder.title != -1 || builder.titleString != null) {
             builder.titleString?.run {
                 fragmentToolbar.title = this

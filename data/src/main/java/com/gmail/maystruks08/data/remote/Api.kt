@@ -105,9 +105,6 @@ class InboxApi @Inject constructor() {
                 add(message)
             }
         }
-
-
-        private val groupedList = inbox.groupBy { it.group }
     }
 
     data class ApiResponse<T>(

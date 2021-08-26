@@ -35,6 +35,9 @@ class MessagesViewModel @Inject constructor(
 
     private val _modeFlow = MutableStateFlow<InboxMode>(InboxMode.Simple)
 
+    private val _toolbarModeFlow = MutableStateFlow<ToolbarMode>(ToolbarMode.Standard)
+    val fragmentToolbar get(): StateFlow<ToolbarMode> = _toolbarModeFlow
+
     init {
         viewModelScope.launch {
             firebaseServiceBus
@@ -48,10 +51,13 @@ class MessagesViewModel @Inject constructor(
                 .onEach {
                     cursor = null
                     _messagesFlow.value = MessageState.Loading
+                    if (it is InboxMode.Group) _toolbarModeFlow.value = ToolbarMode.WithBackButton
                 }
                 .collect {
                     when (it) {
-                        is InboxMode.Group -> loadMessagesGroup(it.name)
+                        is InboxMode.Group -> {
+                            loadMessagesGroup(it.name)
+                        }
                         InboxMode.Simple -> loadMessages()
                         InboxMode.Smart -> loadSmartMessages()
                     }
@@ -70,6 +76,18 @@ class MessagesViewModel @Inject constructor(
 
     fun changeInboxMode(isSwitchEnabled: Boolean) {
         _modeFlow.value = if (isSwitchEnabled) InboxMode.Smart else InboxMode.Simple
+    }
+
+    fun onBackPressed() {
+        when (_toolbarModeFlow.value) {
+            ToolbarMode.Standard -> {
+                viewModelScope.launch { _navigationFlow.send(NavigationState.Exit) }
+            }
+            ToolbarMode.WithBackButton -> {
+                _toolbarModeFlow.value = ToolbarMode.Standard
+                _modeFlow.value = InboxMode.Simple
+            }
+        }
     }
 
     fun onMessageItemClicked(item: MessageView) {
