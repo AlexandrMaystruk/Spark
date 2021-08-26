@@ -17,7 +17,7 @@ interface MessagesDAO : BaseDao<MessageTable> {
     @Query("SELECT * FROM messages WHERE date < COALESCE((SELECT date FROM messages WHERE id =:newAfter), CURRENT_DATE) ORDER BY date DESC LIMIT :pageSize")
     suspend fun fetchPagedMessages(newAfter: String?, pageSize: Int): List<MessageTable>
 
-    @Query("SELECT * FROM messages WHERE date < COALESCE((SELECT date FROM messages WHERE id =:newAfter AND messageGroup LIKE :group), CURRENT_DATE) ORDER BY date DESC LIMIT :pageSize")
+    @Query("SELECT * FROM messages WHERE messageGroup LIKE :group AND date < COALESCE((SELECT date FROM messages WHERE id =:newAfter), CURRENT_DATE) ORDER BY date DESC LIMIT :pageSize")
     suspend fun fetchPagedMessagesByGroup(newAfter: String?, pageSize: Int, group: String): List<MessageTable>
 
     @Query("SELECT* FROM messages WHERE id =:messageId")

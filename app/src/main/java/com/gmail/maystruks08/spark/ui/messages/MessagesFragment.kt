@@ -203,9 +203,9 @@ class MessagesFragment : BaseFragment(),
     private fun setUpItemTouchHelper() {
         val messageSwipeActionHelper = object : MessageSwipeActionHelper(requireContext()) {
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                val position = viewHolder.adapterPosition
+                val position = viewHolder.bindingAdapterPosition
                 val swipedMessage = messageAdapter.currentList[position]
-                swipedMessage ?: return
+                if (swipedMessage !is MessageView) return
                 if (direction == ItemTouchHelper.LEFT) {
                     viewModel.onMessageSwipedLeft(swipedMessage)
                 } else if (direction == ItemTouchHelper.RIGHT) {

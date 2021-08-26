@@ -3,7 +3,6 @@ package com.gmail.maystruks08.data.remote
 import com.gmail.maystruks08.data.pojo.GroupedMessagesDto
 import com.gmail.maystruks08.data.pojo.MessageDto
 import com.gmail.maystruks08.domain.entity.Cursor
-import okhttp3.ResponseBody
 import retrofit2.Response
 import java.util.*
 import javax.inject.Inject
@@ -21,16 +20,28 @@ class InboxApi @Inject constructor() {
 //    ): Response<List<MessageDto>>
 
 
+    fun mutateMessage(messageDto: MessageDto) {
+        val index = inbox.indexOfFirst { it.id == messageDto.id }
+        if (index == -1) {
+            inbox.add(messageDto)
+            inbox.sortedByDescending { it.date }
+            return
+        }
+        inbox[index] = messageDto
+        inbox.sortedByDescending { it.date }
+    }
+
     fun getInboxMessagesGroupedMock(
         newAfter: String? = null,
         pageSize: Int
     ): Response<ApiResponse<List<GroupedMessagesDto>>> {
-        val result = mutableListOf<GroupedMessagesDto>().apply{
-            inbox.groupBy { it.group }.forEach { (group, messages) ->
-               add(GroupedMessagesDto(group = group, messages.take(5), messages.count()))
+        val result = mutableListOf<GroupedMessagesDto>().apply {
+            val sortedList = inbox.apply { sortedByDescending { it.date } }
+            sortedList.groupBy { it.group }.forEach { (group, messages) ->
+                add(GroupedMessagesDto(group = group, messages.take(5), messages.count()))
             }
         }
-        return Response.success(ApiResponse(cursor = Cursor(true, ""), data = result))
+        return Response.success(ApiResponse(cursor = Cursor(false, ""), data = result))
     }
 
     fun getInboxMessagesMock(
@@ -38,7 +49,8 @@ class InboxApi @Inject constructor() {
         pageSize: Int,
         query: String? = null
     ): Response<ApiResponse<List<MessageDto>>> {
-        val source = if(query != null) inbox.filter { it.group.contains(query) } else inbox
+        val source = if (query != null) inbox.filter { it.group.contains(query) }
+            .sortedBy { it.date } else inbox.sortedByDescending { it.date }
         var hasNext = true
         val after: String?
         //init
@@ -57,9 +69,11 @@ class InboxApi @Inject constructor() {
         }
         //scroll to down
         val startIndex = source.indexOfFirst { it.id == newAfter }
-        if (startIndex == -1) return Response.error(
-            404,
-            ResponseBody.create(null, "Haven't elements after")
+        if (startIndex == -1) return Response.success(
+            ApiResponse(
+                cursor = Cursor(false, null),
+                data = emptyList()
+            )
         )
         var endIndex = startIndex + pageSize
         if (endIndex > source.lastIndex) {
@@ -76,9 +90,10 @@ class InboxApi @Inject constructor() {
 
         private val random = Random(4)
         private val fromData = listOf("Alex", "Andrey", "Stepan", "Vovan")
-        private val subjectData = listOf("Stat", "Ivan", "Den", "Andrey")
+        private val subjectData = listOf("Stas", "Ivan", "Den", "Andrey")
         private val groupsData = listOf("Others", "Personal", "Notification", "Not important")
         private val inbox = mutableListOf<MessageDto>().apply {
+            val startDate = Date().time
             repeat(40) {
                 val randomIndex1 = random.nextInt(0, 3)
                 val randomIndex2 = random.nextInt(0, 3)
@@ -89,11 +104,11 @@ class InboxApi @Inject constructor() {
                     else -> 3
                 }
                 val from = fromData[randomIndex1]
-                val subject = subjectData[randomIndex2]
+                val subject = subjectData[groupIndex]
                 val group = groupsData[groupIndex]
                 val message = MessageDto(
                     id = it.toString(),
-                    date = Date(),
+                    date = Date(startDate - it * 100 + it),
                     from = from,
                     subject = subject,
                     contentPreview = "I hope my test app is not bad=)",

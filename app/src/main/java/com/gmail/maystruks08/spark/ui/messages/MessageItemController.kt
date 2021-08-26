@@ -62,12 +62,12 @@ class MessageViewHolder(
 
     init {
         binding.root.setOnClickListener {
-            if (adapterPosition == RecyclerView.NO_POSITION) return@setOnClickListener
+            if (bindingAdapterPosition == RecyclerView.NO_POSITION) return@setOnClickListener
             interaction.onClicked(item)
         }
 
         binding.root.setOnLongClickListener {
-            if (adapterPosition == RecyclerView.NO_POSITION) return@setOnLongClickListener false
+            if (bindingAdapterPosition == RecyclerView.NO_POSITION) return@setOnLongClickListener false
             showPopUpMenu(item)
             return@setOnLongClickListener true
         }

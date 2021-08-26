@@ -1,4 +1,4 @@
-package com.gmail.maystruks08.spark
+package com.gmail.maystruks08.spark.ui.utils
 
 import com.gmail.maystruks08.data.NetworkUtil
 import android.content.Context

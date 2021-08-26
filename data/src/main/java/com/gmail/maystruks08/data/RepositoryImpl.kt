@@ -1,5 +1,6 @@
 package com.gmail.maystruks08.data
 
+import android.util.Log
 import com.gmail.maystruks08.data.local.MessagesDAO
 import com.gmail.maystruks08.data.remote.InboxApi
 import com.gmail.maystruks08.domain.entity.Cursor
@@ -18,66 +19,28 @@ class RepositoryImpl @Inject constructor(
     private val dataMapper: DataMapper
 ) : Repository {
 
-    override suspend fun loadPagingGrouped(cursor: Cursor?): PagedData<List<GroupedMessages>> {
-        val response = inboxService.getInboxMessagesGroupedMock(
-            newAfter = cursor?.newAfter,
-            pageSize = PAGE_SIZE
-        )
-        val responseBody = response.body()
-        val responseData = responseBody?.data
-        if (response.isSuccessful && responseData != null && !responseData.isNullOrEmpty()) {
-            responseData.forEach {
-                messageDAO.insertAllOrReplace(dataMapper.toDatabaseEntities(it.messages))
-            }
-        } else {
-            //TODO parse exception
-            throw Exception("Internal server error")
+    override suspend fun loadPagingSmartInboxGrouped(cursor: Cursor?): PagedData<List<GroupedMessages>> {
+        if (!networkUtil.isOnline()) {
+            return fetchPagedSmartInboxFromDB()
         }
-
-        val localeMessagesTable = messageDAO.fetchGrouped()
-        val localeMessages = localeMessagesTable.map {
-            GroupedMessages(
-                it.key,
-                it.value.take(5).map { dataMapper.toEntity(it) },
-                it.value.count()
-            )
+        return try {
+            fetchPagedSmartInboxFromRemote(cursor?.newAfter)
+        } catch (e: Exception) {
+            fetchPagedSmartInboxFromDB()
         }
-        return PagedData(
-            cursor = responseBody.cursor,
-            data = localeMessages
-        )
     }
 
     override suspend fun loadPaged(cursor: Cursor?): PagedData<List<Message>> {
+        val newAfter = cursor?.newAfter
         if (!networkUtil.isOnline()) {
-            val localeMessagesTable = messageDAO.fetchPagedMessages(newAfter = cursor?.newAfter, pageSize = PAGE_SIZE)
-            val localeMessages = localeMessagesTable.map { dataMapper.toEntity(it) }
-            delay(500)
-            val lastElement = localeMessages.lastOrNull()
-            val hasNext = lastElement?.id != cursor?.newAfter
-            return PagedData(
-                cursor = Cursor(hasNext = hasNext, lastElement?.id),
-                data = localeMessages
-            )
+            return fetchPagedFromDB(newAfter)
         }
-
         delay(1000)
-        val response = inboxService.getInboxMessagesMock(newAfter = cursor?.newAfter, pageSize = PAGE_SIZE)
-        val responseBody = response.body()
-        val responseData = responseBody?.data
-        if (response.isSuccessful && responseData != null && !responseData.isNullOrEmpty()) {
-            messageDAO.insertAllOrReplace(dataMapper.toDatabaseEntities(responseData))
-        } else {
-            //TODO parse exception
-            throw Exception("Internal server error")
+        return try {
+            fetchPagedFromRemote(newAfter)
+        } catch (e: Exception) {
+            fetchPagedFromDB(newAfter)
         }
-
-        val localeMessagesTable = messageDAO.fetchPagedMessages(newAfter = cursor?.newAfter, pageSize = PAGE_SIZE)
-        val localeMessages = localeMessagesTable.map { dataMapper.toEntity(it) }
-        return PagedData(
-            cursor = responseBody.cursor,
-            data = localeMessages
-        )
     }
 
     override suspend fun loadPaged(
@@ -85,42 +48,14 @@ class RepositoryImpl @Inject constructor(
         group: String
     ): PagedData<List<Message>> {
         if (!networkUtil.isOnline()) {
-            val localeMessagesTable =
-                messageDAO.fetchPagedMessages(newAfter = cursor?.newAfter, pageSize = PAGE_SIZE)
-            val localeMessages = localeMessagesTable.map { dataMapper.toEntity(it) }
-            delay(500)
-            val lastElement = localeMessages.lastOrNull()
-            val hasNext = lastElement?.id != cursor?.newAfter
-            return PagedData(
-                cursor = Cursor(hasNext = hasNext, lastElement?.id),
-                data = localeMessages
-            )
+            return fetchPagedFromDB(group, cursor?.newAfter)
         }
-
-        delay(1000)
-        val response = inboxService.getInboxMessagesMock(
-            newAfter = cursor?.newAfter,
-            pageSize = PAGE_SIZE,
-            query = group
-        )
-        val responseBody = response.body()
-        val responseData = responseBody?.data
-        if (response.isSuccessful && responseData != null && !responseData.isNullOrEmpty()) {
-            messageDAO.insertAllOrReplace(dataMapper.toDatabaseEntities(responseData))
-        } else {
-            //TODO parse exception
-            throw Exception("Internal server error")
+        return try {
+            delay(1000)
+            fetchPagedFromRemote(group, cursor?.newAfter)
+        } catch (e: Exception) {
+            fetchPagedFromDB(group, cursor?.newAfter)
         }
-        val localeMessagesTable = messageDAO.fetchPagedMessagesByGroup(
-            newAfter = cursor?.newAfter,
-            pageSize = PAGE_SIZE,
-            group = group
-        )
-        val localeMessages = localeMessagesTable.map { dataMapper.toEntity(it) }
-        return PagedData(
-            cursor = responseBody.cursor,
-            data = localeMessages
-        )
     }
 
     override suspend fun provideMessageById(messageId: String): Message {
@@ -130,16 +65,139 @@ class RepositoryImpl @Inject constructor(
     }
 
     override suspend fun updateMessage(message: Message) {
+        inboxService.mutateMessage(dataMapper.toDtoEntity(message))
         messageDAO.insertOrReplace(dataMapper.toDatabaseEntity(message))
         messageDAO.updateMessageSyncFlag(message.id, true)
     }
 
     override suspend fun saveNewMessage(message: Message) {
-        val tableEntity = dataMapper.toDatabaseEntity(message)
-        messageDAO.insertOrReplace(tableEntity)
+        inboxService.mutateMessage(dataMapper.toDtoEntity(message))
+        messageDAO.insertOrReplace(dataMapper.toDatabaseEntity(message))
+    }
+
+    //SIMPLE
+    private suspend fun fetchPagedFromRemote(newAfter: String?): PagedData<List<Message>> {
+        val response = inboxService.getInboxMessagesMock(newAfter = newAfter, pageSize = PAGE_SIZE)
+        val responseBody = response.body()
+        val responseData = responseBody?.data
+        if (response.isSuccessful && responseData != null) {
+            messageDAO.insertAllOrReplace(dataMapper.toDatabaseEntities(responseData))
+            val messages = responseData.map { dataMapper.toEntity(it) }
+            return PagedData(responseBody.cursor, messages)
+        } else {
+            //TODO parse exception
+            throw Exception("Internal server error")
+
+        }
+    }
+
+    private suspend fun fetchPagedFromDB(newAfter: String?): PagedData<List<Message>> {
+        val localeMessagesTable =
+            messageDAO.fetchPagedMessages(newAfter = newAfter, pageSize = PAGE_SIZE)
+        val localeMessages = localeMessagesTable.map { dataMapper.toEntity(it) }
+        delay(500)
+        val databaseCursor = getCursor(localeMessages, newAfter)
+        val buffer = StringBuilder().apply {
+            localeMessages.forEach { appendLine("id: ${it.id}, date: ${it.date.time}, group: ${it.group}") }
+        }
+        Log.d("CURSOR", "SIMPLE localeMessages: $buffer")
+        return PagedData(
+            cursor = databaseCursor,
+            data = localeMessages
+        )
+    }
+
+    //BY GROUP
+    private suspend fun fetchPagedFromRemote(
+        group: String,
+        newAfter: String?
+    ): PagedData<List<Message>> {
+        val response = inboxService.getInboxMessagesMock(
+            newAfter = newAfter,
+            pageSize = PAGE_SIZE,
+            query = group
+        )
+        val responseBody = response.body()
+        val responseData = responseBody?.data
+        if (response.isSuccessful && responseData != null) {
+            messageDAO.insertAllOrReplace(dataMapper.toDatabaseEntities(responseData))
+            val messages = responseData.map { dataMapper.toEntity(it) }
+            return PagedData(responseBody.cursor, messages)
+        } else {
+            //TODO parse exception
+            throw Exception("Internal server error")
+        }
+    }
+
+    private suspend fun fetchPagedFromDB(
+        group: String,
+        newAfter: String?
+    ): PagedData<List<Message>> {
+        val localeMessagesTable = messageDAO.fetchPagedMessagesByGroup(
+            newAfter = newAfter,
+            pageSize = PAGE_SIZE,
+            group = group
+        )
+        val localeMessages = localeMessagesTable.map { dataMapper.toEntity(it) }
+        val buffer = StringBuilder().apply {
+            localeMessages.forEach { appendLine("id: ${it.id}, date: ${it.date.time}, group: ${it.group}") }
+        }
+        Log.d("CURSOR", "BY GROUP localeMessages: $buffer")
+        val databaseCursor = getCursor(localeMessages, newAfter)
+        return PagedData(
+            cursor = databaseCursor,
+            data = localeMessages
+        )
+    }
+
+    //SMART
+    private suspend fun fetchPagedSmartInboxFromRemote(newAfter: String?): PagedData<List<GroupedMessages>> {
+        val response = inboxService.getInboxMessagesGroupedMock(
+            newAfter = newAfter,
+            pageSize = PAGE_SIZE
+        )
+        val responseBody = response.body()
+        val responseData = responseBody?.data
+        if (response.isSuccessful && responseData != null) {
+            responseData.forEach { messageDAO.insertAllOrReplace(dataMapper.toDatabaseEntities(it.messages)) }
+            val messagesGroup = responseData.map {
+                GroupedMessages(
+                    it.group,
+                    it.messages.take(5).map { dataMapper.toEntity(it) },
+                    it.count
+                )
+            }
+            return PagedData(responseBody.cursor, messagesGroup)
+        } else {
+            //TODO parse exception
+            throw Exception("Internal server error")
+        }
+    }
+
+    private suspend fun fetchPagedSmartInboxFromDB(): PagedData<List<GroupedMessages>> {
+        val localeMessagesTable = messageDAO.fetchGrouped()
+        val localeMessages = localeMessagesTable.map {
+            GroupedMessages(
+                it.key,
+                it.value.take(5).map { dataMapper.toEntity(it) },
+                it.value.count()
+            )
+        }
+        return PagedData(
+            cursor = Cursor(false, null),
+            data = localeMessages
+        )
+    }
+
+    private fun getCursor(messages: List<Message>, previousNewAfter: String?): Cursor {
+        val lastElement = messages.lastOrNull()
+        val hasNext = if (lastElement != null) lastElement.id != previousNewAfter else false
+        val after = if (hasNext) lastElement?.id else null
+        Log.d("CURSOR", "hasNext: $hasNext after: $after")
+        return Cursor(hasNext = hasNext, newAfter = after)
     }
 
     companion object {
-        const val PAGE_SIZE = 14
+        const val PAGE_SIZE = 10
     }
 }

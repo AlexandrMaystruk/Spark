@@ -81,4 +81,19 @@ class DataMapper @Inject constructor() {
         return RuntimeException()
     }
 
+    fun toDtoEntity(message: Message): MessageDto {
+        return message.run {
+            MessageDto(
+                id = id,
+                from = from,
+                subject = subject,
+                contentPreview = contentPreview,
+                content = content,
+                isRead = isRead,
+                isDeleted = isDeleted,
+                group = group,
+                date = date
+            )
+        }
+    }
 }

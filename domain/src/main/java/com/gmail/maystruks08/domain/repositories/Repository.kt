@@ -7,7 +7,7 @@ import com.gmail.maystruks08.domain.entity.PagedData
 
 interface Repository {
 
-    suspend fun loadPagingGrouped(cursor: Cursor?): PagedData<List<GroupedMessages>>
+    suspend fun loadPagingSmartInboxGrouped(cursor: Cursor?): PagedData<List<GroupedMessages>>
 
     suspend fun loadPaged(cursor: Cursor?): PagedData<List<Message>>
 

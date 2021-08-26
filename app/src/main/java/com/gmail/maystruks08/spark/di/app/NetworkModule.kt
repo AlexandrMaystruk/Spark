@@ -5,7 +5,7 @@ import com.gmail.maystruks08.data.RepositoryImpl
 import com.gmail.maystruks08.domain.repositories.Repository
 import com.gmail.maystruks08.domain.use_cases.NewMessageReceivedUseCase
 import com.gmail.maystruks08.domain.use_cases.NewMessageReceivedUseCaseImpl
-import com.gmail.maystruks08.spark.NetworkUtilImpl
+import com.gmail.maystruks08.spark.ui.utils.NetworkUtilImpl
 import dagger.Binds
 import dagger.Module
 import javax.inject.Singleton

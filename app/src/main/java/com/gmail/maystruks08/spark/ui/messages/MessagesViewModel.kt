@@ -7,8 +7,8 @@ import com.gmail.maystruks08.domain.entity.Cursor
 import com.gmail.maystruks08.domain.entity.exceptions.MessageNotFoundException
 import com.gmail.maystruks08.domain.use_cases.*
 import com.gmail.maystruks08.spark.services.FirebaseServiceBus
-import com.gmail.maystruks08.spark.ui.spark_adapter.base.Item
 import com.gmail.maystruks08.spark.ui.utils.view_models.BottomView
+import com.gmail.maystruks08.spark.ui.utils.view_models.InboxView
 import com.gmail.maystruks08.spark.ui.utils.view_models.MessageView
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
@@ -43,7 +43,7 @@ class MessagesViewModel @Inject constructor(
             firebaseServiceBus
                 .subscribeToEvent()
                 .receiveAsFlow()
-                .collect { updateMessageListState() }
+                .collect { reloadMessages() }
         }
 
         viewModelScope.launch {
@@ -97,33 +97,26 @@ class MessagesViewModel @Inject constructor(
     }
 
     fun onReadMessageItemClicked(item: MessageView) {
-        viewModelScope.launch {
-            try {
-                changeMessageUseCase.invoke(item.id)
-                updateMessageListState()
-            } catch (t: Throwable) {
-                handleError(t)
-            }
-        }
+        changeMessageReadState(item, true)
     }
 
     fun onUnreadMessageItemClicked(item: MessageView) {
-        viewModelScope.launch {
-            try {
-                deleteMessageUseCase.invoke(item.id)
-                updateMessageListState()
-            } catch (t: Throwable) {
-                handleError(t)
-            }
-        }
+        changeMessageReadState(item, false)
     }
 
     fun onDeleteMessageClicked(item: MessageView) {
         viewModelScope.launch {
+            val currentState = getCurrentStateView()
+            val index = currentState.indexOfFirst { (it as? MessageView)?.id == item.id }
+            val result = currentState.apply {
+                if (index == -1) return@apply
+                removeAt(index)
+            }
             try {
+                _messagesFlow.value = MessageState.ShowInboxList(result.toList())
                 deleteMessageUseCase.invoke(item.id)
-                updateMessageListState()
             } catch (t: Throwable) {
+                _messagesFlow.value = MessageState.ShowInboxList(result.apply { add(index, item) }.toList())
                 handleError(t)
             }
         }
@@ -133,17 +126,22 @@ class MessagesViewModel @Inject constructor(
         _modeFlow.value = InboxMode.Group(item.group)
     }
 
-    fun onMessageSwipedLeft(swipedMessage: Item) {
-        //TODO
+    fun onMessageSwipedLeft(swipedMessage: MessageView) {
+        onDeleteMessageClicked(swipedMessage)
     }
 
-    fun onMessageSwipedRight(swipedMessage: Item) {
-        //TODO
+    fun onMessageSwipedRight(swipedMessage: MessageView) {
+        if (swipedMessage.isRead) {
+            onUnreadMessageItemClicked(swipedMessage)
+            return
+        }
+        onReadMessageItemClicked(swipedMessage)
     }
 
-    private fun updateMessageListState() {
-//       loadMoreData()
-        // provideMessageList()
+    private fun reloadMessages() {
+        cursor = null
+        _messagesFlow.value = MessageState.Loading
+        loadMoreData()
     }
 
     private fun loadSmartMessages() {
@@ -188,20 +186,52 @@ class MessagesViewModel @Inject constructor(
 
     private fun loadMessagesGroup(group: String) {
         viewModelScope.launch {
-            provideInboxItemsUseCase
-                .invoke(group, cursor)
-                .map {
-                    cursor = it.cursor
-                    inboxViewMapper.toViews(it.data)
-                }
-                .collect {
-                    _messagesFlow.value = MessageState.ShowInboxList(
-                        (_messagesFlow.value as? MessageState.ShowInboxList)?.let { previousState ->
-                            previousState.data.toMutableList().apply { addAll(it) }
-                        } ?: kotlin.run { it }
-                    )
-                }
+            try {
+                provideInboxItemsUseCase
+                    .invoke(group, cursor)
+                    .map {
+                        cursor = it.cursor
+                        inboxViewMapper.toViews(it.data)
+                    }
+                    .collect {
+                        _messagesFlow.value = MessageState.ShowInboxList(
+                            (_messagesFlow.value as? MessageState.ShowInboxList)?.let { previousState ->
+                                previousState.data.toMutableList().apply { addAll(it) }
+                            } ?: kotlin.run { it }
+                        )
+                    }
+            } catch (t: Throwable) {
+                handleInboxLoadingError(t)
+            }
         }
+    }
+
+    private fun changeMessageReadState(item: MessageView, isRead: Boolean){
+        viewModelScope.launch {
+            val currentState = getCurrentStateView()
+            val index = currentState.indexOfFirst { (it as? MessageView)?.id == item.id }
+            val oldItem = currentState[index] as? MessageView
+            try {
+                val result = currentState.apply {
+                    if (index == -1 || oldItem == null) return@apply
+                    this[index] = oldItem.copy(isRead = isRead)
+                }
+                _messagesFlow.value = MessageState.ShowInboxList(result.toList())
+                changeMessageUseCase.invoke(item.id)
+            } catch (t: Throwable) {
+                handleError(t)
+                //restore state
+                val result = currentState.apply {
+                    if (index == -1 || oldItem == null) return@apply
+                    this[index] = oldItem
+                }
+                _messagesFlow.value = MessageState.ShowInboxList(result.toList())
+            }
+        }
+    }
+
+    private fun getCurrentStateView(): MutableList<InboxView> {
+        return (_messagesFlow.value as? MessageState.ShowInboxList)?.data.orEmpty().toMutableList()
     }
 
     private fun handleInboxLoadingError(throwable: Throwable) {

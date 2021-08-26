@@ -17,7 +17,7 @@ class ProvideGroupedInboxItemsUseCaseImpl @Inject constructor(
 
     override suspend operator fun invoke(cursor: Cursor?): Flow<PagedData<List<GroupedMessages>>> {
         return flow {
-            val pagedData = repository.loadPagingGrouped(cursor)
+            val pagedData = repository.loadPagingSmartInboxGrouped(cursor)
             val sortedMessages = pagedData.data
             emit(PagedData(pagedData.cursor, sortedMessages))
         }.flowOn(coroutineDispatchers.io())

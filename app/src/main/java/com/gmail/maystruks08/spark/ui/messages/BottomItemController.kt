@@ -50,7 +50,7 @@ class BottomViewHolder(
 
     init {
         binding.root.setOnClickListener {
-            if (adapterPosition == RecyclerView.NO_POSITION) return@setOnClickListener
+            if (bindingAdapterPosition == RecyclerView.NO_POSITION) return@setOnClickListener
             interaction.onViewAllClicked(item)
         }
     }

@@ -51,13 +51,13 @@ class FCMNotificationServiceMock : Service() {
 
     private fun generateFakeMessage(): Message {
         return Message(
-            id = UUID.randomUUID().toString(),
+            id = Random().nextInt(100).toString(),
             date = Date(),
-            from = "Andrey",
-            subject = "Alex",
+            from = "New message simulation ${Random().nextInt(100)}",
+            subject = UUID.randomUUID().toString(),
             contentPreview = "You could try to better optimize the user interface",
-            group = "Others",
-            content = "I hope my test app is not bad=)\nI hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)",
+            group = "Push mock",
+            content = source[Random().nextInt(1)],
             isRead = false,
             isDeleted = false
         )
@@ -75,5 +75,9 @@ class FCMNotificationServiceMock : Service() {
 
     companion object {
         var isServiceRunning = false
+        private val source = listOf(
+            "Sorry, I haven't had time to implement the JavaMail library. I was in vacation",
+            "I hope my test app is not bad=)\n I think there exist a big bug bucket"
+        )
     }
 }
