@@ -17,5 +17,5 @@ interface InboxModule {
     fun bindSwitchReadReadMessageStateUseCase(impl: SwitchReadReadMessageStateUseCaseImpl): SwitchReadReadMessageStateUseCase
 
     @Binds
-    fun bindProvidePagingInboxItemsUseCase(impl: ProvidePagingInboxItemsUseCaseImpl): ProvidePagingInboxItemsUseCase
+    fun bindProvidePagingInboxItemsUseCase(impl: ProvidePagedInboxItemsUseCaseImpl): ProvidePagedInboxItemsUseCase
 }

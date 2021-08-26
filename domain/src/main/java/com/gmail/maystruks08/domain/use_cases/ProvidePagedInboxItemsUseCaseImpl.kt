@@ -10,16 +10,15 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import javax.inject.Inject
 
-class ProvidePagingInboxItemsUseCaseImpl @Inject constructor(
+class ProvidePagedInboxItemsUseCaseImpl @Inject constructor(
     private val coroutineDispatchers: CoroutineDispatchers,
     private val repository: Repository
-) : ProvidePagingInboxItemsUseCase {
+) : ProvidePagedInboxItemsUseCase {
 
-    override suspend fun invoke(cursor: Cursor?): Flow<PagedData<Map<String, List<Message>>>> {
+    override suspend fun invoke(cursor: Cursor?): Flow<PagedData<List<Message>>> {
         return flow {
-            val pagedData = repository.loadPaging(cursor)
+            val pagedData = repository.loadPaged(cursor)
             val sortedMessages = pagedData.data
-                .groupBy { it.group }
             emit(PagedData(pagedData.cursor, sortedMessages))
         }.flowOn(coroutineDispatchers.io())
     }

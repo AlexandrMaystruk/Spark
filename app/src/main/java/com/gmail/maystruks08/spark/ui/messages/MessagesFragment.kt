@@ -66,6 +66,7 @@ class MessagesFragment : BaseFragment(),
 
     override fun builder() = FragmentToolbar.Builder()
         .withMenu(R.menu.menu_search_with_settings)
+        .withSwitch { viewModel.changeInboxMode(it) }
         .withMenuItems(
             listOf(R.id.action_search),
             listOf(MenuItem.OnMenuItemClickListener {

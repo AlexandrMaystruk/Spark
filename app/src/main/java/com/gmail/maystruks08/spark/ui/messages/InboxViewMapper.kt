@@ -2,6 +2,7 @@ package com.gmail.maystruks08.spark.ui.messages
 
 import android.content.res.Resources
 import androidx.annotation.StringRes
+import com.gmail.maystruks08.domain.entity.GroupedMessages
 import com.gmail.maystruks08.domain.entity.Message
 import com.gmail.maystruks08.spark.R
 import com.gmail.maystruks08.spark.ui.utils.toPrintFormat
@@ -24,6 +25,23 @@ class InboxViewMapper @Inject constructor(private val resources: Resources) {
         }
     }
 
+    fun toInboxView(data: List<GroupedMessages>): List<InboxView> {
+        return mutableListOf<InboxView>().apply {
+            data.forEach { (group, messages, count) ->
+                if (messages.isEmpty()) return@forEach
+                add(StickyView(R.drawable.ic_pin, group))
+                addAll(toViews(messages))
+                val title = "${getString(R.string.action_show_all)} $count"
+                add(
+                    BottomView(
+                        title = title,
+                        group = group
+                    )
+                )
+            }
+        }
+    }
+
     fun toInboxView(data: Map<String, List<Message>>): List<InboxView> {
         return mutableListOf<InboxView>().apply {
             data.forEach { (group, messages) ->
@@ -41,7 +59,7 @@ class InboxViewMapper @Inject constructor(private val resources: Resources) {
         }
     }
 
-    private fun toViews(messages: List<Message>): List<MessageView> {
+    fun toViews(messages: List<Message>): List<MessageView> {
         return messages.map { toView(it) }
     }
 

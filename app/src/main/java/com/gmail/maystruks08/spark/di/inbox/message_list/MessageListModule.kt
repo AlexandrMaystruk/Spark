@@ -1,6 +1,8 @@
 package com.gmail.maystruks08.spark.di.inbox.message_list
 
 import androidx.lifecycle.ViewModel
+import com.gmail.maystruks08.domain.use_cases.ProvideGroupedInboxItemsUseCase
+import com.gmail.maystruks08.domain.use_cases.ProvideGroupedInboxItemsUseCaseImpl
 import com.gmail.maystruks08.domain.use_cases.ProvideInboxItemsUseCase
 import com.gmail.maystruks08.domain.use_cases.ProvideInboxItemsUseCaseImpl
 import com.gmail.maystruks08.spark.di.base.ViewModelKey
@@ -23,4 +25,9 @@ abstract class MessageListModule {
     @Binds
     @MessageListScope
     abstract fun bindProvideInboxItemsUseCase(impl: ProvideInboxItemsUseCaseImpl): ProvideInboxItemsUseCase
+
+    @Binds
+    @MessageListScope
+    abstract fun bindProvideGroupedInboxItemsUseCase(impl: ProvideGroupedInboxItemsUseCaseImpl): ProvideGroupedInboxItemsUseCase
+
 }

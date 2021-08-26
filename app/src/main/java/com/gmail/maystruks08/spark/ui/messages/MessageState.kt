@@ -13,3 +13,10 @@ sealed class NavigationState {
     object Nothing : NavigationState()
     class OpenDetailScreen(val item: MessageView) : NavigationState()
 }
+
+
+sealed class InboxMode {
+    object Smart : InboxMode()
+    object Simple : InboxMode()
+    data class Group(val name: String) : InboxMode()
+}

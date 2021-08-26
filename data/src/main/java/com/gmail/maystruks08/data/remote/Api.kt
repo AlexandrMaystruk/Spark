@@ -1,5 +1,6 @@
 package com.gmail.maystruks08.data.remote
 
+import com.gmail.maystruks08.data.pojo.GroupedMessagesDto
 import com.gmail.maystruks08.data.pojo.MessageDto
 import com.gmail.maystruks08.domain.entity.Cursor
 import okhttp3.ResponseBody
@@ -20,38 +21,52 @@ class InboxApi @Inject constructor() {
 //    ): Response<List<MessageDto>>
 
 
-    fun getInboxMessagesMock(
+    fun getInboxMessagesGroupedMock(
         newAfter: String? = null,
         pageSize: Int
-    ): Response<ApiResponse> {
+    ): Response<ApiResponse<List<GroupedMessagesDto>>> {
+        val result = mutableListOf<GroupedMessagesDto>().apply{
+            inbox.groupBy { it.group }.forEach { (group, messages) ->
+               add(GroupedMessagesDto(group = group, messages.take(5), messages.count()))
+            }
+        }
+        return Response.success(ApiResponse(cursor = Cursor(true, ""), data = result))
+    }
+
+    fun getInboxMessagesMock(
+        newAfter: String? = null,
+        pageSize: Int,
+        query: String? = null
+    ): Response<ApiResponse<List<MessageDto>>> {
+        val source = if(query != null) inbox.filter { it.group.contains(query) } else inbox
         var hasNext = true
         val after: String?
         //init
         if (newAfter == null) {
-            val lastIndex = if (pageSize > inbox.lastIndex) {
+            val lastIndex = if (pageSize > source.lastIndex) {
                 hasNext = false
-                inbox.lastIndex
+                source.lastIndex
             } else {
                 hasNext = true
                 pageSize
             }
-            val pagedList = inbox.subList(0, lastIndex)
-            after = pagedList.lastOrNull()?.id
+            val pagedList = source.subList(0, lastIndex)
+            after = if (hasNext) pagedList.lastOrNull()?.id else null
             val cursor = Cursor(hasNext, after)
             return Response.success(ApiResponse(cursor = cursor, data = pagedList))
         }
         //scroll to down
-        val startIndex = inbox.indexOfFirst { it.id == newAfter }
+        val startIndex = source.indexOfFirst { it.id == newAfter }
         if (startIndex == -1) return Response.error(
             404,
             ResponseBody.create(null, "Haven't elements after")
         )
         var endIndex = startIndex + pageSize
-        if (endIndex > inbox.lastIndex) {
+        if (endIndex > source.lastIndex) {
             hasNext = false
-            endIndex = inbox.lastIndex
+            endIndex = source.lastIndex
         }
-        val pagedList = inbox.subList(startIndex, endIndex)
+        val pagedList = source.subList(startIndex, endIndex)
         after = if (hasNext) pagedList.lastOrNull()?.id else null
         val cursor = Cursor(hasNext, after)
         return Response.success(ApiResponse(cursor = cursor, data = pagedList))
@@ -90,11 +105,14 @@ class InboxApi @Inject constructor() {
                 add(message)
             }
         }
+
+
+        private val groupedList = inbox.groupBy { it.group }
     }
 
-    data class ApiResponse(
+    data class ApiResponse<T>(
         val cursor: Cursor,
-        val data: List<MessageDto>?,
+        val data: T?,
         val error: Exception? = null
     )
 }

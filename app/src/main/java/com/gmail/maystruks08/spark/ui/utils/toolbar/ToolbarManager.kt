@@ -1,6 +1,7 @@
 package com.gmail.maystruks08.spark.ui.utils.toolbar
 
 import androidx.appcompat.widget.SearchView
+import androidx.appcompat.widget.SwitchCompat
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import com.gmail.maystruks08.spark.R
@@ -44,6 +45,14 @@ class ToolbarManager constructor(private var fragmentToolbar: Toolbar) {
                     return false
                 }
             })
+        }
+
+        if (builder.switchChangeListener != null) {
+            val menu = fragmentToolbar.menu
+            val switch = menu.findItem(R.id.switchEnableSmartMode).actionView as? SwitchCompat
+            switch?.setOnCheckedChangeListener { _, isChecked ->
+                builder.switchChangeListener.invoke(isChecked)
+            }
         }
 
         if (builder.menuItems.isNotEmpty() && builder.menuClicks.isNotEmpty()) {

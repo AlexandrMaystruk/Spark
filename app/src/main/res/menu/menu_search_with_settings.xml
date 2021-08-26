@@ -2,6 +2,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:id="@+id/switchEnableSmartMode"
+        app:actionLayout="@layout/menu_switch"
+        app:showAsAction="always"
+        android:title="Smart" />
+
+    <item
         android:id="@+id/action_search"
         android:icon="@drawable/ic_search"
         android:title="@string/action_search"

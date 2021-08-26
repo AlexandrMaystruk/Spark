@@ -1,0 +1,9 @@
+<androidx.appcompat.widget.SwitchCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/switchForActionBar"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_centerVertical="true"
+    android:enabled="true"
+    android:text="Smart"
+    android:saveEnabled="true"
+    android:textColor="@color/white" />

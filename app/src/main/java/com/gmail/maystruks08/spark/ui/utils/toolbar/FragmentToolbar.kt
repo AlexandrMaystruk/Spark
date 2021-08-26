@@ -14,6 +14,7 @@ class FragmentToolbar(
     @DrawableRes val navigationIcon: Int,
     val navigationIconClickListener: (() -> Unit)?,
     val searchViewTextChangeListener: ((String) -> Unit)?,
+    val switchChangeListener: ((Boolean) -> Unit)?,
     val menuItems: MutableList<Int>,
     val menuClicks: MutableList<MenuItem.OnMenuItemClickListener?>
 ) {
@@ -26,6 +27,7 @@ class FragmentToolbar(
         private var menuItems: MutableList<Int> = mutableListOf()
         private var menuClicks: MutableList<MenuItem.OnMenuItemClickListener?> = mutableListOf()
         private var searchViewTextChangeListener: ((String) -> Unit)? = null
+        private var switchChangeListener: ((Boolean) -> Unit)? = null
 
         fun withTitle(title: Int) = apply { this.title = title }
 
@@ -46,6 +48,10 @@ class FragmentToolbar(
             this.searchViewTextChangeListener = searchViewTextChangeListener
         }
 
+        fun withSwitch(switchChangeListener: (Boolean) -> Unit) = apply {
+            this.switchChangeListener = switchChangeListener
+        }
+
         fun withMenuItems(menuItems: List<Int>, menuClicks: List<MenuItem.OnMenuItemClickListener?>) = apply {
             this.menuItems.addAll(menuItems)
             this.menuClicks.addAll(menuClicks)
@@ -58,6 +64,7 @@ class FragmentToolbar(
             navigationIcon,
             navigationIconClickListener,
             searchViewTextChangeListener,
+            switchChangeListener,
             menuItems,
             menuClicks
         )
