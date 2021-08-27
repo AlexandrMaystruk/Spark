@@ -97,8 +97,6 @@ class MessagesViewModel @Inject constructor(
     }
 
     fun onMessageItemClicked(item: MessageView) {
-        cursor = null
-        _messagesFlow.value = MessageState.Loading
         viewModelScope.launch {
             _navigationFlow.send(NavigationState.OpenDetailScreen(item))
         }

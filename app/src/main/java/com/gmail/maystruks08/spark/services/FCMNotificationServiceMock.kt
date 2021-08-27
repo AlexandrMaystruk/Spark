@@ -4,7 +4,6 @@ import android.app.Service
 import android.content.Intent
 import android.os.IBinder
 import com.gmail.maystruks08.domain.entity.Message
-import com.gmail.maystruks08.domain.use_cases.NewMessageReceivedUseCase
 import com.gmail.maystruks08.spark.App
 import kotlinx.coroutines.*
 import java.util.*
@@ -27,7 +26,7 @@ class FCMNotificationServiceMock : Service() {
         isServiceRunning = true
         serviceScope.launch(Dispatchers.IO) {
             while (isServiceRunning) {
-                delay(10 * 1000L)
+                delay(15 * 1000L)
                 val msg = generateFakeMessage()
                 try {
                     notification.showNotification(
@@ -49,9 +48,9 @@ class FCMNotificationServiceMock : Service() {
             from = "Random message ${Random().nextInt(100)}",
             header = "New message simulation",
             subject = UUID.randomUUID().toString(),
-            contentPreview = "You could try to better optimize the user interface",
+            contentPreview = source[Random().nextInt(2)].take(100),
             group = "Push mock",
-            content = source[Random().nextInt(1)],
+            content = source[Random().nextInt(2)],
             isRead = false,
             isDeleted = false
         )
@@ -71,7 +70,8 @@ class FCMNotificationServiceMock : Service() {
         var isServiceRunning = false
         private val source = listOf(
             "Sorry, I haven't had time to implement the JavaMail library. I was in vacation",
-            "I hope my test app is not bad=)\n I think there exist a big bug bucket"
+            "I hope my test app is not bad=)",
+            "I think there exist a big bug bucket"
         )
     }
 }
