@@ -65,7 +65,7 @@ class InboxViewMapper @Inject constructor(private val resources: Resources) {
 
     fun toView(message: Message): MessageView {
         return message.run {
-            MessageView(id, date.toString(), subject, isRead)
+            MessageView(id, date.toString(), from, isRead)
         }
     }
 

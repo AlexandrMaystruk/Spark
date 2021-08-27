@@ -62,12 +62,12 @@ class MessageViewHolder(
 
     init {
         binding.root.setOnClickListener {
-            if (bindingAdapterPosition == RecyclerView.NO_POSITION) return@setOnClickListener
+            if (adapterPosition == RecyclerView.NO_POSITION) return@setOnClickListener
             interaction.onClicked(item)
         }
 
         binding.root.setOnLongClickListener {
-            if (bindingAdapterPosition == RecyclerView.NO_POSITION) return@setOnLongClickListener false
+            if (adapterPosition == RecyclerView.NO_POSITION) return@setOnLongClickListener false
             showPopUpMenu(item)
             return@setOnLongClickListener true
         }
@@ -76,7 +76,7 @@ class MessageViewHolder(
     override fun onBind(item: MessageView) {
         super.onBind(item)
         with(binding) {
-            tvMessageFrom.text = item.subject
+            tvMessageFrom.text = item.from
             renderStatus(item)
         }
     }

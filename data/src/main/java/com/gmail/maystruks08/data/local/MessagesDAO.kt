@@ -1,6 +1,5 @@
 package com.gmail.maystruks08.data.local
 
-import androidx.paging.DataSource
 import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.Transaction
@@ -25,9 +24,6 @@ interface MessagesDAO : BaseDao<MessageTable> {
 
     @Query("UPDATE messages SET isNeedToSync =:isNeedToSync WHERE id =:messageId")
     suspend fun updateMessageSyncFlag(messageId: String, isNeedToSync: Boolean)
-
-    @Query("SELECT * FROM messages")
-    fun getPagedMessages(): DataSource.Factory<Int, MessageTable>
 
     @Query("SELECT DISTINCT messageGroup FROM messages ")
     suspend fun fetchAllMessageGroups(): List<String>

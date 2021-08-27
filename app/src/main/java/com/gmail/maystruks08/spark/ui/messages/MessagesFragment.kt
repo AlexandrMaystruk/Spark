@@ -147,7 +147,7 @@ class MessagesFragment : BaseFragment(),
             is NavigationState.OpenDetailScreen -> {
                 val action = MessagesFragmentDirections.actionMessagesFragmentToDetailFragment(
                     state.item.id,
-                    state.item.subject
+                    state.item.from
                 )
                 findNavController(this).navigate(action)
             }
@@ -203,7 +203,7 @@ class MessagesFragment : BaseFragment(),
     private fun setUpItemTouchHelper() {
         val messageSwipeActionHelper = object : MessageSwipeActionHelper(requireContext()) {
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                val position = viewHolder.bindingAdapterPosition
+                val position = viewHolder.adapterPosition
                 val swipedMessage = messageAdapter.currentList[position]
                 if (swipedMessage !is MessageView) return
                 if (direction == ItemTouchHelper.LEFT) {
