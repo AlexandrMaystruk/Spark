@@ -17,6 +17,7 @@ import javax.inject.Inject
 
 class MessagesViewModel @Inject constructor(
     private val inboxViewMapper: InboxViewMapper,
+    private val newMessageReceivedUseCase: NewMessageReceivedUseCase,
     private val provideInboxItemsUseCase: ProvideInboxItemsUseCase,
     private val provideGroupedInboxItemsUseCase: ProvideGroupedInboxItemsUseCase,
     private val providePagedInboxItemsUseCase: ProvidePagedInboxItemsUseCase,
@@ -43,9 +44,16 @@ class MessagesViewModel @Inject constructor(
             firebaseServiceBus
                 .subscribeToEvent()
                 .receiveAsFlow()
-                .collect { reloadMessages() }
+                .onEach { newMessageReceivedUseCase.invoke(it) }
+                .collect {
+                    val currentState = getCurrentStateView()
+                    currentState.add(0, inboxViewMapper.toView(it))
+                    _messagesFlow.value = MessageState.ShowInboxList(currentState)
+                }
         }
+    }
 
+    fun initUI(){
         viewModelScope.launch {
             _modeFlow
                 .onEach {
@@ -55,9 +63,7 @@ class MessagesViewModel @Inject constructor(
                 }
                 .collect {
                     when (it) {
-                        is InboxMode.Group -> {
-                            loadMessagesGroup(it.name)
-                        }
+                        is InboxMode.Group -> loadMessagesGroup(it.name)
                         InboxMode.Simple -> loadMessages()
                         InboxMode.Smart -> loadSmartMessages()
                     }
@@ -91,6 +97,8 @@ class MessagesViewModel @Inject constructor(
     }
 
     fun onMessageItemClicked(item: MessageView) {
+        cursor = null
+        _messagesFlow.value = MessageState.Loading
         viewModelScope.launch {
             _navigationFlow.send(NavigationState.OpenDetailScreen(item))
         }
@@ -113,10 +121,10 @@ class MessagesViewModel @Inject constructor(
                 removeAt(index)
             }
             try {
-                _messagesFlow.value = MessageState.ShowInboxList(result.toList())
+                _messagesFlow.value = MessageState.ShowInboxList(result)
                 deleteMessageUseCase.invoke(item.id)
             } catch (t: Throwable) {
-                _messagesFlow.value = MessageState.ShowInboxList(result.apply { add(index, item) }.toList())
+                _messagesFlow.value = MessageState.ShowInboxList(result.apply { add(index, item) })
                 handleError(t)
             }
         }
@@ -136,12 +144,6 @@ class MessagesViewModel @Inject constructor(
             return
         }
         onReadMessageItemClicked(swipedMessage)
-    }
-
-    private fun reloadMessages() {
-        cursor = null
-        _messagesFlow.value = MessageState.Loading
-        loadMoreData()
     }
 
     private fun loadSmartMessages() {
@@ -174,7 +176,7 @@ class MessagesViewModel @Inject constructor(
                     .collect {
                         _messagesFlow.value = MessageState.ShowInboxList(
                             (_messagesFlow.value as? MessageState.ShowInboxList)?.let { previousState ->
-                                previousState.data.toMutableList().apply { addAll(it) }
+                                previousState.data.toMutableList().apply { addAll(it) }.distinctBy { (it as? MessageView)?.id }
                             } ?: kotlin.run { it }
                         )
                     }
@@ -196,7 +198,7 @@ class MessagesViewModel @Inject constructor(
                     .collect {
                         _messagesFlow.value = MessageState.ShowInboxList(
                             (_messagesFlow.value as? MessageState.ShowInboxList)?.let { previousState ->
-                                previousState.data.toMutableList().apply { addAll(it) }
+                                previousState.data.toMutableList().apply { addAll(it) }.distinctBy { (it as? MessageView)?.id }
                             } ?: kotlin.run { it }
                         )
                     }
@@ -216,7 +218,7 @@ class MessagesViewModel @Inject constructor(
                     if (index == -1 || oldItem == null) return@apply
                     this[index] = oldItem.copy(isRead = isRead)
                 }
-                _messagesFlow.value = MessageState.ShowInboxList(result.toList())
+                _messagesFlow.value = MessageState.ShowInboxList(result)
                 changeMessageUseCase.invoke(item.id)
             } catch (t: Throwable) {
                 handleError(t)
@@ -225,7 +227,7 @@ class MessagesViewModel @Inject constructor(
                     if (index == -1 || oldItem == null) return@apply
                     this[index] = oldItem
                 }
-                _messagesFlow.value = MessageState.ShowInboxList(result.toList())
+                _messagesFlow.value = MessageState.ShowInboxList(result)
             }
         }
     }

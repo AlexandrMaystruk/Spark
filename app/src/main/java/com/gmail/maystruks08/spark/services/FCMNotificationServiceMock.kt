@@ -19,9 +19,6 @@ class FCMNotificationServiceMock : Service() {
     lateinit var receiveMessageBus: FirebaseServiceBus
 
     @Inject
-    lateinit var newMessageReceivedUseCase: NewMessageReceivedUseCase
-
-    @Inject
     lateinit var notification: NotificationController
 
     override fun onCreate() {
@@ -29,8 +26,8 @@ class FCMNotificationServiceMock : Service() {
         App.appComponent.inject(this)
         isServiceRunning = true
         serviceScope.launch(Dispatchers.IO) {
-            delay(10 * 1000L)
             while (isServiceRunning) {
+                delay(10 * 1000L)
                 val msg = generateFakeMessage()
                 try {
                     notification.showNotification(
@@ -39,12 +36,8 @@ class FCMNotificationServiceMock : Service() {
                         msg.contentPreview,
                         msg.content
                     )
-                    newMessageReceivedUseCase.invoke(msg)
                     receiveMessageBus.sendEvent(msg)
-                } catch (e: Exception) {
-
-                }
-                delay(1 * 60 * 1000L)
+                } catch (e: Exception) { }
             }
         }
     }
@@ -53,7 +46,8 @@ class FCMNotificationServiceMock : Service() {
         return Message(
             id = Random().nextInt(100).toString(),
             date = Date(),
-            from = "New message simulation ${Random().nextInt(100)}",
+            from = "Random message ${Random().nextInt(100)}",
+            header = "New message simulation",
             subject = UUID.randomUUID().toString(),
             contentPreview = "You could try to better optimize the user interface",
             group = "Push mock",

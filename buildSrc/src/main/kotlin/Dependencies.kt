@@ -7,6 +7,7 @@ object Dependencies {
     val jetpack = Jetpack
     val room = Room
     val retrofit = Retrofit
+    val api = Api
     val image = Image
     val other = Other
 }

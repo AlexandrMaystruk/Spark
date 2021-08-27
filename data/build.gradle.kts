@@ -14,6 +14,10 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    packagingOptions {
+        resources.pickFirsts.add("META-INF/LICENSE.txt")
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = false
@@ -36,6 +40,7 @@ dependencies {
     implementation(project(":domain"))
     room()
     retrofit()
+    mail()
 }
 
 fun DependencyHandlerScope.room() {
@@ -50,3 +55,10 @@ fun DependencyHandlerScope.retrofit() {
     api(Dependencies.retrofit.interceptor)
     api(Dependencies.retrofit.retrofitCoroutines)
 }
+
+fun DependencyHandlerScope.mail() {
+    api(Dependencies.api.javaMail)
+    api(Dependencies.api.javaMailActivation)
+}
+
+

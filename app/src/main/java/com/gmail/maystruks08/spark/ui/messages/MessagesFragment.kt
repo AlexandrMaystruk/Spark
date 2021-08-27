@@ -105,7 +105,7 @@ class MessagesFragment : BaseFragment(),
 
     override fun initViews() {
         setupAdapter()
-        viewModel.loadMoreData()
+        viewModel.initUI()
     }
 
     /**
@@ -193,7 +193,7 @@ class MessagesFragment : BaseFragment(),
                         val totalItemCount = layoutManager?.itemCount ?: 0
                         var firstVisibleItemPosition = 0
                         if (layoutManager is LinearLayoutManager) firstVisibleItemPosition = layoutManager.findLastVisibleItemPosition()
-                        if (firstVisibleItemPosition + 8 >= totalItemCount) viewModel.loadMoreData()
+                        if (firstVisibleItemPosition + 5 >= totalItemCount) viewModel.loadMoreData()
                     }
                 }
             })

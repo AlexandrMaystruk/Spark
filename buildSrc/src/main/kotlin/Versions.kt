@@ -50,4 +50,6 @@ object Versions {
     const val circleImageView = "3.1.0"
     const val serialization = "1.2.1"
     const val kotlinxDatetime = "0.2.1"
+
+    const val javaMail = "1.6.2"
 }

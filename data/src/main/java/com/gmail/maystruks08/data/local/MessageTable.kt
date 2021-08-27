@@ -13,6 +13,7 @@ data class MessageTable(
     val id: String,
     val date: Date,
     val from: String,
+    val header: String,
     val subject: String,
     val contentPreview: String,
     val content: String,

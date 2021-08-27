@@ -1,15 +1,74 @@
 package com.gmail.maystruks08.data.remote
 
+import android.util.Log
 import com.gmail.maystruks08.data.pojo.GroupedMessagesDto
 import com.gmail.maystruks08.data.pojo.MessageDto
 import com.gmail.maystruks08.domain.entity.Cursor
 import retrofit2.Response
 import java.util.*
 import javax.inject.Inject
+import javax.mail.Folder.READ_ONLY
+import javax.mail.MessagingException
+import javax.mail.NoSuchProviderException
+import javax.mail.Session
 import kotlin.random.Random
 
 
 class InboxApi @Inject constructor() {
+
+    fun getInbox(user: String, password: String): List<MessageDto> {
+        try {
+            val host = "imap.gmail.com"
+            val prop = Properties()
+            prop["mail.imap.host"] = host
+            prop["mail.imap.port"] = "993"
+            prop["mail.imap.ssl.enable"] = "true"
+            val emailSession = Session.getInstance(prop)
+//            val emailSession = Session.getInstance(prop,
+//                object : Authenticator() {
+//                    override fun getPasswordAuthentication(): PasswordAuthentication {
+//                        return PasswordAuthentication(user, password)
+//                    }
+//                })
+
+            emailSession.debug = true
+
+            val store = emailSession.getStore("imap")
+//            store.connect(host, user, password)
+            store.connect(host, user, password)
+
+            val emailFolder = store.getFolder("INBOX")
+            emailFolder.open(READ_ONLY)
+
+            val messages = emailFolder.getMessages(0, 10)
+
+            val messagesDto = messages.map {
+                MessageDto(
+                    id = it.receivedDate.time.toString(),
+                    date = it.sentDate,
+                    from = it.from.toString(),
+                    header = it.from.toString(),
+                    subject = it.subject,
+                    contentPreview = it.description,
+                    group = it.folder.name,
+                    content = it.content.toString(),
+                    isRead = false,  //hardcode
+                    isDeleted = false //hardcode
+                )
+            }
+
+            emailFolder.close(true)
+            store.close()
+            return messagesDto
+        } catch (e: NoSuchProviderException) {
+            Log.e("GMAIL", e.stackTraceToString())
+        } catch (e: MessagingException) {
+            Log.e("GMAIL", e.stackTraceToString())
+        } catch (e: Exception) {
+            Log.e("GMAIL", e.stackTraceToString())
+        }
+        return emptyList()
+    }
 
 //    @GET("/inboxList.json")
 //    fun getInboxMessageList(
@@ -49,6 +108,9 @@ class InboxApi @Inject constructor() {
         pageSize: Int,
         query: String? = null
     ): Response<ApiResponse<List<MessageDto>>> {
+
+//        getInbox("100for24@gmail.com", "100for24_Run")
+
         val source = if (query != null) inbox.filter { it.group.contains(query) }
             .sortedBy { it.date } else inbox.sortedByDescending { it.date }
         var hasNext = true
@@ -89,6 +151,12 @@ class InboxApi @Inject constructor() {
     companion object {
 
         private val random = Random(4)
+        private val headersData = listOf(
+            "Contact with me",
+            "Write me back",
+            "I haven't idea whats wrong",
+            "Simple header"
+        )
         private val fromData = listOf("Alex", "Andrey", "Stepan", "Vovan")
         private val subjectData = listOf("Stas", "Ivan", "Den", "Andrey")
         private val groupsData = listOf("Others", "Personal", "Notification", "Not important")
@@ -104,6 +172,7 @@ class InboxApi @Inject constructor() {
                     else -> 3
                 }
                 val from = fromData[randomIndex1]
+                val header = headersData[randomIndex2]
                 val subject = subjectData[groupIndex]
                 val group = groupsData[groupIndex]
                 val message = MessageDto(
@@ -111,6 +180,7 @@ class InboxApi @Inject constructor() {
                     date = Date(startDate - it * 100 + it),
                     from = from,
                     subject = subject,
+                    header = header,
                     contentPreview = "I hope my test app is not bad=)",
                     content = "I hope my test app is not bad=)\nI hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)I hope my test app is not bad=)",
                     group = group,

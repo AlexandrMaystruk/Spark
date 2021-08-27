@@ -77,6 +77,9 @@ class MessageViewHolder(
         super.onBind(item)
         with(binding) {
             tvMessageFrom.text = item.from
+            tvDate.text = item.date
+            tvMessageHeader.text = item.header
+            tvMessagePreview.text = item.contentPreview
             renderStatus(item)
         }
     }

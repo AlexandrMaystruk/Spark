@@ -7,6 +7,7 @@ data class MessageDto(
     val date: Date,
     val from: String,
     val subject: String,
+    val header: String,
     val contentPreview: String,
     val group: String,
     val content: String,

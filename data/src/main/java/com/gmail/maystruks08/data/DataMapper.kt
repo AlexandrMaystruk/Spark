@@ -16,6 +16,7 @@ class DataMapper @Inject constructor() {
             MessageTable(
                 id = id,
                 from = from,
+                header = header,
                 subject = subject,
                 contentPreview = contentPreview,
                 content = content,
@@ -32,6 +33,7 @@ class DataMapper @Inject constructor() {
             MessageTable(
                 id = id,
                 from = from,
+                header = header,
                 subject = subject,
                 contentPreview = contentPreview,
                 content = content,
@@ -49,6 +51,7 @@ class DataMapper @Inject constructor() {
             Message(
                 id = id,
                 from = from,
+                header = header,
                 subject = subject,
                 contentPreview = contentPreview,
                 content = content,
@@ -70,6 +73,7 @@ class DataMapper @Inject constructor() {
                 contentPreview = contentPreview,
                 content = content,
                 isRead = isRead,
+                header = header,
                 isDeleted = isDeleted,
                 group = messageGroup,
                 date = date
@@ -86,6 +90,7 @@ class DataMapper @Inject constructor() {
             MessageDto(
                 id = id,
                 from = from,
+                header = header,
                 subject = subject,
                 contentPreview = contentPreview,
                 content = content,
