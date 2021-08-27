@@ -18,7 +18,7 @@ class ProvidePagedInboxItemsUseCaseImpl @Inject constructor(
     override suspend fun invoke(cursor: Cursor?): Flow<PagedData<List<Message>>> {
         return flow {
             val pagedData = repository.loadPaged(cursor)
-            val sortedMessages = pagedData.data
+            val sortedMessages = pagedData.data.filter { !it.isDeleted }
             emit(PagedData(pagedData.cursor, sortedMessages))
         }.flowOn(coroutineDispatchers.io())
     }

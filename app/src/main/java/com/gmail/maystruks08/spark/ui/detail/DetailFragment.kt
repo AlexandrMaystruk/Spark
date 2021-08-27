@@ -56,7 +56,9 @@ class DetailFragment : BaseFragment() {
             lifecycleScope.launchWhenStarted {
                 buttonState.collect(::renderButtonsViewState)
             }
-
+            lifecycleScope.launchWhenStarted {
+                backNavigation.collect { findNavController(this@DetailFragment).navigateUp() }
+            }
         }
     }
 

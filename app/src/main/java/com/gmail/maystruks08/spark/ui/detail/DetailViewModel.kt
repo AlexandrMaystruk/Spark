@@ -8,8 +8,11 @@ import com.gmail.maystruks08.domain.use_cases.ProvideMessageUseCase
 import com.gmail.maystruks08.domain.use_cases.SwitchReadReadMessageStateUseCase
 import com.gmail.maystruks08.spark.R
 import com.gmail.maystruks08.spark.ui.messages.InboxViewMapper
+import com.gmail.maystruks08.spark.ui.messages.NavigationState
 import com.gmail.maystruks08.spark.ui.utils.view_models.MessageDetailView
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -25,8 +28,10 @@ class DetailViewModel @Inject constructor(
     private val _messageDetailFlow = MutableStateFlow<DetailViewState>(DetailViewState.Loading)
 
     val buttonState get() = _buttonStateFlow
-    private val _buttonStateFlow =
-        MutableStateFlow<DetailViewButtonState>(DetailViewButtonState.Hide)
+    private val _buttonStateFlow = MutableStateFlow<DetailViewButtonState>(DetailViewButtonState.Hide)
+
+    private val _backNavigationFlow = Channel<Unit>(Channel.BUFFERED)
+    val backNavigation = _backNavigationFlow.receiveAsFlow()
 
     fun requireMessage(messageId: String) {
         viewModelScope.launch {
@@ -71,11 +76,10 @@ class DetailViewModel @Inject constructor(
         getCurrentDetailView()?.let { handleButtonsState(it.isRead, true) }
         viewModelScope.launch {
             try {
-                val updatedMessage = deleteMessageUseCase.invoke(messageId)
-                getCurrentDetailView()?.isDeleted = updatedMessage.isDeleted
+               deleteMessageUseCase.invoke(messageId).also { _backNavigationFlow.send(Unit) }
             } catch (t: Throwable) {
                 //after error render previous state
-                getCurrentDetailView()?.let { handleButtonsState(it.isRead, it.isDeleted) }
+                getCurrentDetailView()?.let { handleButtonsState(it.isRead, false) }
                 onError(t)
             }
         }
