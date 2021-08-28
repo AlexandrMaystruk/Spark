@@ -17,6 +17,8 @@ import javax.inject.Inject
 
 class MessagesViewModel @Inject constructor(
     private val inboxViewMapper: InboxViewMapper,
+    private val provideMessageUseCase: ProvideMessageUseCase,
+
     private val newMessageReceivedUseCase: NewMessageReceivedUseCase,
     private val provideInboxItemsUseCase: ProvideInboxItemsUseCase,
     private val provideGroupedInboxItemsUseCase: ProvideGroupedInboxItemsUseCase,
@@ -93,6 +95,14 @@ class MessagesViewModel @Inject constructor(
                 _toolbarModeFlow.value = ToolbarMode.Standard
                 _modeFlow.value = InboxMode.Simple
             }
+        }
+    }
+
+    fun onNewMessageNotificationClicked(messageId: String){
+        viewModelScope.launch {
+           val message = provideMessageUseCase.invoke(messageId)
+            val item = inboxViewMapper.toView(message)
+            _navigationFlow.send(NavigationState.OpenDetailScreen(item))
         }
     }
 

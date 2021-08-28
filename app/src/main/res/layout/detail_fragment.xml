@@ -6,11 +6,11 @@
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/profile_image"
-        android:layout_width="56dp"
-        android:layout_height="56dp"
-        android:layout_margin="24dp"
+        android:layout_width="46dp"
+        android:layout_height="46dp"
+        android:layout_margin="16dp"
         android:src="@drawable/ic_launcher_foreground"
-        app:civ_border_color="#FF000000"
+        app:civ_border_color="#FFFFFF"
         app:civ_border_width="2dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -21,7 +21,6 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
         android:layout_marginEnd="24dp"
-        android:text="Spark"
         android:textSize="@dimen/text_m"
         android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/tvMessageHeader"
@@ -36,7 +35,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="12dp"
-        android:text="17.08.2021"
         app:layout_constraintBottom_toBottomOf="@+id/tvMessageFrom"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/tvMessageFrom" />
@@ -48,7 +46,6 @@
         android:layout_gravity="center"
         android:layout_marginStart="24dp"
         android:layout_marginEnd="12dp"
-        android:text="Check for update"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@+id/profile_image"
         app:layout_constraintEnd_toEndOf="parent"

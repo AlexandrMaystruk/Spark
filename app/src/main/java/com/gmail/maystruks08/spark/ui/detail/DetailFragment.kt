@@ -91,6 +91,7 @@ class DetailFragment : BaseFragment() {
                 is DetailViewState.ShowMessage -> {
                     progressBar.visibility = View.GONE
                     with(state.detail){
+                        tvMessageHeader.text = header
                         tvMessageFrom.text = from
                         tvContent.text = content
                         tvDate.text = date

@@ -31,6 +31,7 @@ class FCMNotificationServiceMock : Service() {
                 try {
                     notification.showNotification(
                         msg.date.time.toInt(),
+                        msg.id,
                         "New message received",
                         msg.contentPreview,
                         msg.content

@@ -16,6 +16,7 @@ class InboxViewMapper @Inject constructor(private val resources: Resources) {
             MessageDetailView(
                 id,
                 date.toPrintFormat(),
+                header,
                 from,
                 subject,
                 content,

@@ -3,9 +3,11 @@ package com.gmail.maystruks08.spark
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.navigation.fragment.NavHostFragment
 import com.gmail.maystruks08.spark.databinding.ActivityMainBinding
 import com.gmail.maystruks08.spark.services.FCMNotificationServiceMock
 import com.gmail.maystruks08.spark.services.NotificationController
+import com.gmail.maystruks08.spark.ui.messages.MessagesFragment
 import com.gmail.maystruks08.spark.ui.utils.toolbar.FragmentToolbar
 import com.gmail.maystruks08.spark.ui.utils.toolbar.ToolbarManager
 import javax.inject.Inject
@@ -24,17 +26,28 @@ class MainActivity : AppCompatActivity() {
         App.appComponent.inject(this)
         toolbarManager = ToolbarManager(binding!!.toolbar)
         runMockFirebaseMessagingService()
-        handleIntent()
+        handleStartIntent(intent)
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        handleStartIntent(intent)
     }
 
     fun configToolbar(fragmentToolbar: FragmentToolbar) {
         toolbarManager?.prepareToolbar(fragmentToolbar)
     }
 
-    private fun handleIntent() {
-        intent?.extras?.let {
-            val isStartedFromNotification = it.getBoolean(NotificationController.IS_ACTIVITY_STARTED_FROM_NOTIFICATION)
-            if (isStartedFromNotification) notificationController.removeAllNotifications()
+    private fun handleStartIntent(intent: Intent?) {
+        intent?.let {
+            val isStartedFromNotification = it.getBooleanExtra(NotificationController.IS_ACTIVITY_STARTED_FROM_NOTIFICATION, false)
+            val messageId = it.getStringExtra(NotificationController.NOTIFICATION_MESSAGE_ID).orEmpty()
+            if (isStartedFromNotification) {
+                val navHostFragment = supportFragmentManager.fragments.firstOrNull() as NavHostFragment
+                val messagesFragment = navHostFragment.childFragmentManager.fragments.firstOrNull() as MessagesFragment
+                messagesFragment.viewModel.onNewMessageNotificationClicked(messageId)
+                notificationController.removeAllNotifications()
+            }
         }
     }
 
