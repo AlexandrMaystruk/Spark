@@ -13,6 +13,12 @@ dependencies {
     di()
     async()
     paging()
+
+    testImplementation(Dependencies.unitTest.testCore)
+    testImplementation(Dependencies.unitTest.testJUnit)
+    testImplementation(Dependencies.unitTest.testRunner)
+    testImplementation(Dependencies.unitTest.mockito)
+    testImplementation (Dependencies.unitTest.coroutinesTest)
 }
 
 fun DependencyHandlerScope.core() {

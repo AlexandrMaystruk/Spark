@@ -52,4 +52,13 @@ object Versions {
     const val kotlinxDatetime = "0.2.1"
 
     const val javaMail = "1.6.2"
+
+    const val testCoreVersion = "1.4.0"
+    const val extJUnitVersion = "4.13.2"
+    const val runnerVersion = "1.4.0"
+    const val hamcrestVersion = "1.3"
+    const val truthVersion = "1.0.1"
+
+    const val mockito ="2.23.0"
+    const val coroutinesTest = "1.5.0"
 }

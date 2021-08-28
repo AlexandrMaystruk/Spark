@@ -10,4 +10,5 @@ object Dependencies {
     val api = Api
     val image = Image
     val other = Other
+    val unitTest = UnitTests
 }
